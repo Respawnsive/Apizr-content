@@ -1,17 +1,19 @@
-﻿using MonkeyFinder.Services;
+﻿using Apizr;
+using MonkeyFinder.Services;
 
 namespace MonkeyFinder.ViewModel;
 
 public partial class MonkeysViewModel : BaseViewModel
 {
     public ObservableCollection<Monkey> Monkeys { get; } = new();
-    MonkeyService monkeyService;
+    IApizrManager<IMonkeyApi> monkeyManager;
     IConnectivity connectivity;
     IGeolocation geolocation;
-    public MonkeysViewModel(MonkeyService monkeyService, IConnectivity connectivity, IGeolocation geolocation)
+
+    public MonkeysViewModel(IApizrManager<IMonkeyApi> monkeyManager, IConnectivity connectivity, IGeolocation geolocation)
     {
         Title = "Monkey Finder";
-        this.monkeyService = monkeyService;
+        this.monkeyManager = monkeyManager;
         this.connectivity = connectivity;
         this.geolocation = geolocation;
     }
@@ -47,7 +49,7 @@ public partial class MonkeysViewModel : BaseViewModel
             }
 
             IsBusy = true;
-            var monkeys = await monkeyService.GetMonkeys();
+            var monkeys = await monkeyManager.ExecuteAsync(api => api.GetMonkeysAsync());
 
             if(Monkeys.Count != 0)
                 Monkeys.Clear();
