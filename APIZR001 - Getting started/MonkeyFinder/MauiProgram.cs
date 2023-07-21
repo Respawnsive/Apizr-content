@@ -23,35 +23,20 @@ public static class MauiProgram
 		builder.Logging.AddDebug();
 #endif
 
-    	builder.Services.AddSingleton<IConnectivity>(Connectivity.Current);
-		builder.Services.AddSingleton<IGeolocation>(Geolocation.Default);
-		builder.Services.AddSingleton<IMap>(Map.Default);
+		// Plugins
+    	builder.Services.AddSingleton(Connectivity.Current);
+		builder.Services.AddSingleton(Geolocation.Default);
+		builder.Services.AddSingleton(Map.Default);
 
-		builder.Services.AddSingleton<MonkeyService>();
-		builder.Services.AddSingleton<MonkeysViewModel>();
+        // Services
+        builder.Services.AddApizrManagerFor<IMonkeyApi>();
+
+        // Presentation
+        builder.Services.AddSingleton<MonkeysViewModel>();
 		builder.Services.AddSingleton<MainPage>();
 
 		builder.Services.AddTransient<MonkeyDetailsViewModel>();
 		builder.Services.AddTransient<DetailsPage>();
-
-        // Some policies
-        var registry = new PolicyRegistry
-        {
-            {
-                "TransientHttpError",
-                HttpPolicyExtensions
-                    .HandleTransientHttpError()
-                    .WaitAndRetryAsync(new[]
-                    {
-                        TimeSpan.FromSeconds(1),
-                        TimeSpan.FromSeconds(5),
-                        TimeSpan.FromSeconds(10)
-                    })
-            }
-        };
-        builder.Services.AddPolicyRegistry(registry);
-
-        builder.Services.AddApizrManagerFor<IMonkeyApi>();
 
 		return builder.Build();
 	}
