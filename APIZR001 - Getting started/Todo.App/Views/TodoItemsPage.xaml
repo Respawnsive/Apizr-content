@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Todo.App.Views.TodoItemsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+    xmlns:models="clr-namespace:Todo.App.Models"
+    xmlns:viewmodels="clr-namespace:Todo.App.ViewModels"
+    Title="Todo item"
+    ios:Page.UseSafeArea="True"
+    x:DataType="viewmodels:TodoItemsViewModel">
+    <Grid
+        BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground},
+                                          Dark={StaticResource DarkBackground}}"
+        RowDefinitions="*,Auto"
+        RowSpacing="0">
+        <RefreshView Command="{Binding GetTodoItemsCommand}" IsRefreshing="{Binding IsRefreshing}">
+            <ContentView>
+                <CollectionView ItemsSource="{Binding TodoItems}" SelectionMode="None">
+                    <CollectionView.EmptyView>
+                        <StackLayout Padding="100">
+                            <Image
+                                HeightRequest="160"
+                                HorizontalOptions="Center"
+                                Source="nodata.png"
+                                VerticalOptions="Center"
+                                WidthRequest="160" />
+                        </StackLayout>
+                    </CollectionView.EmptyView>
+                    <!--<CollectionView.ItemsLayout>
+                            <GridItemsLayout  Orientation="Horizontal" Span="3"/>
+                        </CollectionView.ItemsLayout>-->
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:TodoItem">
+                            <Grid Padding="10" HorizontalOptions="Fill">
+                                <Frame HeightRequest="125" Style="{StaticResource CardView}">
+                                    <Frame.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:TodoItemsViewModel}}, Path=GoToDetailsCommand}" CommandParameter="{Binding .}" />
+                                    </Frame.GestureRecognizers>
+                                    <Grid Padding="0">
+                                        <VerticalStackLayout Padding="10" VerticalOptions="Center">
+                                            <Label Style="{StaticResource LargeLabel}" Text="{Binding Name}" />
+                                            <Label Style="{StaticResource MediumLabel}" Text="{Binding Id}" />
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </Frame>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </ContentView>
+        </RefreshView>
+
+        <Button
+            Grid.Row="1"
+            Margin="8"
+            Command="{Binding GetTodoItemsCommand}"
+            IsEnabled="{Binding IsNotBusy}"
+            Style="{StaticResource ButtonOutline}"
+            Text="Get Todo items" />
+
+
+        <ActivityIndicator
+            Grid.RowSpan="2"
+            HorizontalOptions="Fill"
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}"
+            VerticalOptions="Center"
+            Color="{StaticResource Primary}" />
+    </Grid>
+</ContentPage>
