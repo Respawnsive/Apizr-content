@@ -1,5 +1,7 @@
 ﻿using Apizr;
+using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
+using Refit;
 using Todo.App.Services;
 using Todo.App.Views;
 
@@ -12,12 +14,14 @@ public static class MauiProgram
 		var builder = MauiApp.CreateBuilder();
 		builder
 			.UseMauiApp<App>()
-			.ConfigureFonts(fonts =>
+            .UseMauiCommunityToolkit()
+            .ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 			});
 #if DEBUG
 		builder.Logging.AddDebug();
+        builder.Logging.SetMinimumLevel(LogLevel.Trace);
 #endif
 
 		// Plugins
@@ -33,6 +37,9 @@ public static class MauiProgram
 		builder.Services.AddTransient<TodoItemDetailsViewModel>();
 		builder.Services.AddTransient<TodoItemDetailsPage>();
 
-		return builder.Build();
+        builder.Services.AddTransient<TodoItemEditViewModel>();
+        builder.Services.AddTransient<TodoItemEditPage>();
+
+return builder.Build();
 	}
 }

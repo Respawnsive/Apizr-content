@@ -23,18 +23,6 @@ public partial class TodoItemsViewModel : BaseViewModel
     [ObservableProperty] private bool _isRefreshing;
 
     [RelayCommand]
-    private async Task GoToDetailsAsync(TodoItem todoItem)
-    {
-        if (todoItem == null)
-            return;
-
-        await Shell.Current.GoToAsync(nameof(TodoItemDetailsPage), true, new Dictionary<string, object>
-        {
-            {"TodoItem", todoItem }
-        });
-    }
-
-    [RelayCommand]
     private async Task GetTodoItemsAsync()
     {
         if (IsBusy)
@@ -53,12 +41,11 @@ public partial class TodoItemsViewModel : BaseViewModel
 
             var todoItems = await _todoItemsManager.ExecuteAsync(api => api.GetTodoItemsAsync());
 
-            if(todoItems.Count != 0)
-                todoItems.Clear();
+            if(TodoItems.Count != 0)
+                TodoItems.Clear();
 
             foreach(var todoItem in todoItems)
-                todoItems.Add(todoItem);
-
+                TodoItems.Add(todoItem);
         }
         catch (Exception ex)
         {
@@ -70,6 +57,32 @@ public partial class TodoItemsViewModel : BaseViewModel
             IsBusy = false;
             IsRefreshing = false;
         }
+    }
 
+    [RelayCommand]
+    private async Task GoToEditAsync()
+    {
+        await Shell.Current.GoToAsync(nameof(TodoItemEditPage), true, new Dictionary<string, object>
+        {
+            {"TodoItem", null }
+        });
+    }
+
+    [RelayCommand]
+    private async Task GoToDetailsAsync(TodoItem todoItem)
+    {
+        if (todoItem == null)
+            return;
+
+        await Shell.Current.GoToAsync(nameof(TodoItemDetailsPage), true, new Dictionary<string, object>
+        {
+            {"TodoItem", todoItem }
+        });
+    }
+
+    [RelayCommand]
+    private async Task OnAppearingAsync()
+    {
+        await GetTodoItemsAsync();
     }
 }

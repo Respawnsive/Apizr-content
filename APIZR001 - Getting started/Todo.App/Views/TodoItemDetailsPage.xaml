@@ -6,14 +6,50 @@
     xmlns:viewmodel="clr-namespace:Todo.App.ViewModels"
     Title="{Binding TodoItem.Name}"
     x:DataType="viewmodel:TodoItemDetailsViewModel">
-    <ScrollView BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}">
 
-        <Label
-            Margin="0,0,0,8"
-            FontAttributes="Bold"
-            HorizontalOptions="Center"
-            Style="{StaticResource LargeLabel}"
-            Text="{Binding TodoItem.Name}"
-            TextColor="White" />
-    </ScrollView>
+    <Grid
+        BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground},
+                                          Dark={StaticResource DarkBackground}}"
+        RowDefinitions="*,Auto"
+        RowSpacing="0">
+        <ScrollView Grid.Row="0">
+            <Grid RowDefinitions="Auto,*">
+                <Label
+                    Grid.Row="0"
+                    Margin="0,0,0,8"
+                    FontAttributes="Bold"
+                    HorizontalOptions="Center"
+                    Style="{StaticResource LargeLabel}"
+                    Text="{Binding TodoItem.Name}"
+                    TextColor="White" />
+
+                <Label
+                    Grid.Row="1"
+                    Margin="0,0,0,8"
+                    FontAttributes="Bold"
+                    HorizontalOptions="Center"
+                    Style="{StaticResource LargeLabel}"
+                    Text="{Binding TodoItem.Notes}"
+                    TextColor="White" />
+            </Grid>
+        </ScrollView>
+        <Grid Grid.Row="1" ColumnDefinitions="*,*">
+
+            <Button
+                Grid.Column="0"
+                Margin="8"
+                Command="{Binding GoToEditCommand}"
+                IsEnabled="{Binding IsNotBusy}"
+                Style="{StaticResource ButtonOutline}"
+                Text="Edit" />
+
+            <Button
+                Grid.Column="1"
+                Margin="8"
+                Command="{Binding DeleteTodoItemCommand}"
+                IsEnabled="{Binding IsNotBusy}"
+                Style="{StaticResource ButtonOutline}"
+                Text="Delete" />
+        </Grid>
+    </Grid>
 </ContentPage>

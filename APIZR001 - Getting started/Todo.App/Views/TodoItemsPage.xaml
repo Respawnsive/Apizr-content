@@ -4,11 +4,15 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:models="clr-namespace:Todo.App.Models"
     xmlns:viewmodels="clr-namespace:Todo.App.ViewModels"
     Title="Todo item"
     ios:Page.UseSafeArea="True"
     x:DataType="viewmodels:TodoItemsViewModel">
+    <ContentPage.Behaviors>
+        <mct:EventToCommandBehavior Command="{Binding AppearingCommand}" EventName="Appearing" />
+    </ContentPage.Behaviors>
     <Grid
         BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground},
                                           Dark={StaticResource DarkBackground}}"
@@ -19,17 +23,12 @@
                 <CollectionView ItemsSource="{Binding TodoItems}" SelectionMode="None">
                     <CollectionView.EmptyView>
                         <StackLayout Padding="100">
-                            <Image
-                                HeightRequest="160"
+                            <Label
                                 HorizontalOptions="Center"
-                                Source="nodata.png"
-                                VerticalOptions="Center"
-                                WidthRequest="160" />
+                                Text="Pull to refresh items"
+                                VerticalOptions="Center" />
                         </StackLayout>
                     </CollectionView.EmptyView>
-                    <!--<CollectionView.ItemsLayout>
-                            <GridItemsLayout  Orientation="Horizontal" Span="3"/>
-                        </CollectionView.ItemsLayout>-->
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="models:TodoItem">
                             <Grid Padding="10" HorizontalOptions="Fill">
@@ -37,11 +36,15 @@
                                     <Frame.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:TodoItemsViewModel}}, Path=GoToDetailsCommand}" CommandParameter="{Binding .}" />
                                     </Frame.GestureRecognizers>
-                                    <Grid Padding="0">
-                                        <VerticalStackLayout Padding="10" VerticalOptions="Center">
+                                    <Grid Padding="0" ColumnDefinitions="*,auto">
+                                        <VerticalStackLayout
+                                            Grid.Column="0"
+                                            Padding="10"
+                                            VerticalOptions="Center">
                                             <Label Style="{StaticResource LargeLabel}" Text="{Binding Name}" />
                                             <Label Style="{StaticResource MediumLabel}" Text="{Binding Id}" />
                                         </VerticalStackLayout>
+                                        <CheckBox Grid.Column="1" IsChecked="{Binding IsComplete}" />
                                     </Grid>
                                 </Frame>
                             </Grid>
@@ -54,10 +57,10 @@
         <Button
             Grid.Row="1"
             Margin="8"
-            Command="{Binding GetTodoItemsCommand}"
+            Command="{Binding GoToEditCommand}"
             IsEnabled="{Binding IsNotBusy}"
             Style="{StaticResource ButtonOutline}"
-            Text="Get Todo items" />
+            Text="Create" />
 
 
         <ActivityIndicator

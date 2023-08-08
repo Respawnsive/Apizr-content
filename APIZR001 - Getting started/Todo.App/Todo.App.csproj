@@ -81,16 +81,26 @@
 
 	<ItemGroup>
 	  <PackageReference Include="Apizr.Extensions.Microsoft.DependencyInjection" Version="5.1.0" />
+	  <PackageReference Include="CommunityToolkit.Maui" Version="5.2.0" />
 	  <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
 	  <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Views\TodoItemEditPage.xaml.cs">
+	    <DependentUpon>TodoItemEditPage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\TodoItemDetailsPage.xaml.cs">
 	    <DependentUpon>TodoItemDetailsPage.xaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Views\TodoItemsPage.xaml.cs">
 	    <DependentUpon>TodoItemsPage.xaml</DependentUpon>
 	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Update="Views\TodoItemEditPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	</ItemGroup>
 </Project>
