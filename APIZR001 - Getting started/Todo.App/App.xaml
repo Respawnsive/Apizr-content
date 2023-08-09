@@ -62,6 +62,39 @@
                 <Setter Property="FontSize" Value="20" />
             </Style>
 
+            <Style x:Key="BaseEditor" TargetType="Editor">
+                <Setter Property="FontFamily" Value="OpenSansRegular" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource LabelText}, Dark={StaticResource LabelTextDark}}" />
+            </Style>
+
+            <Style
+                x:Key="MicroEditor"
+                BasedOn="{StaticResource BaseEditor}"
+                TargetType="Editor">
+                <Setter Property="FontSize" Value="10" />
+            </Style>
+
+            <Style
+                x:Key="SmallEditor"
+                BasedOn="{StaticResource BaseEditor}"
+                TargetType="Editor">
+                <Setter Property="FontSize" Value="12" />
+            </Style>
+
+            <Style
+                x:Key="MediumEditor"
+                BasedOn="{StaticResource BaseEditor}"
+                TargetType="Editor">
+                <Setter Property="FontSize" Value="16" />
+            </Style>
+
+            <Style
+                x:Key="LargeEditor"
+                BasedOn="{StaticResource BaseEditor}"
+                TargetType="Editor">
+                <Setter Property="FontSize" Value="20" />
+            </Style>
+
             <Style ApplyToDerivedTypes="True" TargetType="RefreshView">
                 <Setter Property="RefreshColor" Value="{StaticResource Primary}" />
                 <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}" />

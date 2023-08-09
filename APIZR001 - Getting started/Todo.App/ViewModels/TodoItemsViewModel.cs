@@ -62,9 +62,9 @@ public partial class TodoItemsViewModel : BaseViewModel
     [RelayCommand]
     private async Task GoToEditAsync()
     {
-        await Shell.Current.GoToAsync(nameof(TodoItemEditPage), true, new Dictionary<string, object>
+        await Shell.Current.GoToAsync($"{nameof(TodoItemEditPage)}", true, new Dictionary<string, object>
         {
-            {"TodoItem", null }
+            {"TodoItem", new TodoItem() }
         });
     }
 
@@ -74,7 +74,7 @@ public partial class TodoItemsViewModel : BaseViewModel
         if (todoItem == null)
             return;
 
-        await Shell.Current.GoToAsync(nameof(TodoItemDetailsPage), true, new Dictionary<string, object>
+        await Shell.Current.GoToAsync($"{nameof(TodoItemDetailsPage)}", true, new Dictionary<string, object>
         {
             {"TodoItem", todoItem }
         });

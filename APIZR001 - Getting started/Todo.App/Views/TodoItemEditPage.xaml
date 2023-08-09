@@ -6,14 +6,52 @@
     xmlns:viewmodel="clr-namespace:Todo.App.ViewModels"
     Title="{Binding TodoItem.Name}"
     x:DataType="viewmodel:TodoItemEditViewModel">
-    <ScrollView BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}">
 
-        <Label
-            Margin="0,0,0,8"
-            FontAttributes="Bold"
-            HorizontalOptions="Center"
-            Style="{StaticResource LargeLabel}"
-            Text="{Binding TodoItem.Name}"
-            TextColor="White" />
-    </ScrollView>
+    <Grid
+        BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground},
+                                          Dark={StaticResource DarkBackground}}"
+        RowDefinitions="*,Auto"
+        RowSpacing="0">
+        <ScrollView Grid.Row="0">
+            <Grid RowDefinitions="Auto,*">
+                <Editor
+                    Grid.Row="0"
+                    Margin="0,0,0,8"
+                    AutoSize="TextChanges"
+                    FontAttributes="Bold"
+                    HorizontalOptions="Center"
+                    Placeholder="name..."
+                    Style="{StaticResource LargeEditor}"
+                    Text="{Binding TodoItem.Name}"
+                    TextColor="White" />
+                <Editor
+                    Grid.Row="1"
+                    Margin="0,0,0,8"
+                    AutoSize="TextChanges"
+                    FontAttributes="Bold"
+                    HorizontalOptions="Center"
+                    Placeholder="notes..."
+                    Style="{StaticResource LargeEditor}"
+                    Text="{Binding TodoItem.Notes}"
+                    TextColor="White" />
+            </Grid>
+        </ScrollView>
+
+        <Button
+            Grid.Row="1"
+            Margin="8"
+            Command="{Binding SaveCommand}"
+            IsEnabled="{Binding IsNotBusy}"
+            Style="{StaticResource ButtonOutline}"
+            Text="Save" />
+
+
+        <ActivityIndicator
+            Grid.RowSpan="2"
+            HorizontalOptions="Fill"
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}"
+            VerticalOptions="Center"
+            Color="{StaticResource Primary}" />
+    </Grid>
 </ContentPage>

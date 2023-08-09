@@ -21,19 +21,16 @@ public partial class TodoItemDetailsViewModel : BaseViewModel
     TodoItem _todoItem;
 
     [RelayCommand]
-    private async Task GoToEditAsync(TodoItem todoItem)
+    private async Task GoToEditAsync()
     {
-        if (todoItem == null)
-            return;
-
         await Shell.Current.GoToAsync(nameof(TodoItemEditPage), true, new Dictionary<string, object>
         {
-            {"TodoItem", todoItem }
+            {"TodoItem", TodoItem }
         });
     }
 
     [RelayCommand]
-    private async Task DeleteTodoItemAsync(TodoItem todoItem)
+    private async Task DeleteTodoItemAsync()
     {
         if (IsBusy)
             return;
@@ -55,7 +52,7 @@ public partial class TodoItemDetailsViewModel : BaseViewModel
 
             IsBusy = true;
 
-            await _todoItemsManager.ExecuteAsync(api => api.DeleteTodoItemAsync(todoItem.Id));
+            await _todoItemsManager.ExecuteAsync(api => api.DeleteTodoItemAsync(TodoItem.Id));
 
             await Shell.Current.GoToAsync("..");
         }
