@@ -1,4 +1,7 @@
 ﻿using Apizr;
+using Apizr.Transferring.Managing;
+using Apizr.Transferring.Requesting;
+using Refit;
 using StarCellar.App.Models;
 using StarCellar.App.Services;
 
@@ -8,15 +11,66 @@ namespace StarCellar.App.ViewModels;
 public partial class WineEditViewModel : BaseViewModel
 {
     private readonly IApizrManager<ICellarApi> _cellarManager;
+    private readonly IApizrUploadManager<IUploadApi<string>, string> _uploadManager;
     private readonly IConnectivity _connectivity;
+    private readonly IFilePicker _filePicker;
 
-    public WineEditViewModel(IApizrManager<ICellarApi> cellarManager, IConnectivity connectivity)
+    public WineEditViewModel(IApizrManager<ICellarApi> cellarManager,
+        IApizrUploadManager<IUploadApi<string>, string> uploadManager, 
+        IConnectivity connectivity,
+        IFilePicker filePicker)
     {
         _cellarManager = cellarManager;
+        _uploadManager = uploadManager;
         _connectivity = connectivity;
+        _filePicker = filePicker;
     }
 
     [ObservableProperty] Wine _wine;
+
+    [RelayCommand]
+    private async Task SetImageAsync()
+    {
+        if (IsBusy)
+            return;
+
+        try
+        {
+            var result = await _filePicker.PickAsync();
+            if (result != null)
+            {
+                if (!result.FileName.EndsWith("jpg", StringComparison.OrdinalIgnoreCase) &&
+                    !result.FileName.EndsWith("png", StringComparison.OrdinalIgnoreCase))
+                {
+                    await Shell.Current.DisplayAlert("Format rejected!",
+                        $"Please select a jpg or png file only.", "OK");
+                    return;
+                }
+
+                if (_connectivity.NetworkAccess != NetworkAccess.Internet)
+                {
+                    await Shell.Current.DisplayAlert("No connectivity!",
+                        $"Please check internet and try again.", "OK");
+                    return;
+                }
+
+                IsBusy = true;
+
+                await using var stream = await result.OpenReadAsync();
+                var streamPart = new StreamPart(stream, result.FileName);
+                Wine.ImageUrl = await _uploadManager.UploadAsync(streamPart);
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Unable to set an image: {ex.Message}");
+            await Shell.Current.DisplayAlert("Error!", ex.Message, "OK");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
 
     [RelayCommand]
     private async Task SaveAsync()

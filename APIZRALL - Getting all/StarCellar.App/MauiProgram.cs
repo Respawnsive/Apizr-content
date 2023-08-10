@@ -26,9 +26,13 @@ public static class MauiProgram
 
 		// Plugins
     	builder.Services.AddSingleton(Connectivity.Current);
+        builder.Services.AddSingleton(FilePicker.Default);
 
         // Services
-        builder.Services.AddApizrManagerFor<ICellarApi>();
+        builder.Services.AddApizr(registry => 
+            registry.AddManagerFor<ICellarApi>()
+                .AddUploadManagerWith<string>(options => options.WithBasePath("upload")),
+            options => options.WithBaseAddress("https://localhost:7015"));
 
         // Presentation
         builder.Services.AddSingleton<CellarViewModel>();

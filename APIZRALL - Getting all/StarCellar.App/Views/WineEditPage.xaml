@@ -36,7 +36,11 @@
                         HorizontalOptions="Center"
                         Source="{Binding Wine.ImageUrl, TargetNullValue='wine_bottle.png', FallbackValue='wine_bottle.png'}"
                         VerticalOptions="Center"
-                        WidthRequest="160" />
+                        WidthRequest="160">
+                        <Image.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SetImageCommand}" />
+                        </Image.GestureRecognizers>
+                    </Image>
                 </Border>
                 <Editor
                     Grid.Row="1"

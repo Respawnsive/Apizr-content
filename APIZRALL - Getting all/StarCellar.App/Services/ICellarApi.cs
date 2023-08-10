@@ -5,7 +5,7 @@ using StarCellar.App.Models;
 
 namespace StarCellar.App.Services
 {
-    [WebApi("https://localhost:7015"), Log]
+    [WebApi, Log]
     public interface ICellarApi
     {
         [Get("/wines")]
