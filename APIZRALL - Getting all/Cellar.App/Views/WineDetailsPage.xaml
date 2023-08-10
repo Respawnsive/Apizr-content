@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Cellar.app.Views.WineDetailsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewModels="clr-namespace:Cellar.app.ViewModels"
+    Title="{Binding Wine.Name}"
+    x:DataType="viewModels:WineDetailsViewModel">
+
+    <Grid
+        BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground},
+                                          Dark={StaticResource DarkBackground}}"
+        RowDefinitions="*,Auto"
+        RowSpacing="0">
+        <ScrollView Grid.Row="0">
+            <Grid RowDefinitions="Auto,Auto,*">
+                <BoxView
+                    Grid.RowSpan="2"
+                    BackgroundColor="{StaticResource Primary}"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Fill" />
+
+                <Border
+                    Margin="0,8,0,0"
+                    HeightRequest="160"
+                    HorizontalOptions="Center"
+                    Stroke="White"
+                    StrokeShape="RoundRectangle 80"
+                    StrokeThickness="6"
+                    VerticalOptions="Center"
+                    WidthRequest="160">
+                    <Image
+                        Aspect="AspectFill"
+                        HeightRequest="160"
+                        HorizontalOptions="Center"
+                        Source="{Binding Wine.ImageUrl, TargetNullValue='wine_bottle.png', FallbackValue='wine_bottle.png'}"
+                        VerticalOptions="Center"
+                        WidthRequest="160" />
+                </Border>
+                <Label
+                    Grid.Row="1"
+                    Margin="0,0,0,8"
+                    FontAttributes="Bold"
+                    HorizontalOptions="Center"
+                    Style="{StaticResource LargeLabel}"
+                    Text="{Binding Wine.Name}"
+                    TextColor="White" />
+
+                <Label
+                    Grid.Row="2"
+                    Margin="0,0,0,8"
+                    FontAttributes="Bold"
+                    HorizontalOptions="Center"
+                    Style="{StaticResource LargeLabel}"
+                    Text="{Binding Wine.Description}"
+                    TextColor="White" />
+            </Grid>
+        </ScrollView>
+        <Grid Grid.Row="1" ColumnDefinitions="*,*">
+
+            <Button
+                Grid.Column="0"
+                Margin="8"
+                Command="{Binding GoToEditCommand}"
+                IsEnabled="{Binding IsNotBusy}"
+                Style="{StaticResource ButtonOutline}"
+                Text="Edit" />
+
+            <Button
+                Grid.Column="1"
+                Margin="8"
+                Command="{Binding DeleteWineCommand}"
+                IsEnabled="{Binding IsNotBusy}"
+                Style="{StaticResource ButtonOutline}"
+                Text="Delete" />
+        </Grid>
+    </Grid>
+</ContentPage>
