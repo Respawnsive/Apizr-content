@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Todo.Api;
 using System.Diagnostics;
 using System.Reflection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,16 +30,49 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
 var app = builder.Build();
 
 app.UseHttpsRedirection();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(app.Environment.ContentRootPath, "Uploads")),
+    RequestPath = "/uploads"
+});
+
 app.Map("/", async context =>
 {
     await Task.CompletedTask;
     context.Response.Redirect("/swagger");
+});
+
+app.MapPost("/upload", async (IFormFile file, IHttpContextAccessor httpContextAccessor) =>
+{
+    var fileName = Path.GetFileName(file.FileName);
+    var uniqueFileName = string.Concat(Path.GetFileNameWithoutExtension(fileName)
+        , "_"
+        , Guid.NewGuid().ToString().AsSpan(0, 4)
+        , Path.GetExtension(fileName));
+
+    var directoryPath = "Uploads";
+    var filePath = Path.Combine(directoryPath, uniqueFileName);
+
+    if (!Directory.Exists(directoryPath)) 
+        Directory.CreateDirectory(directoryPath);
+
+    await using var stream = File.OpenWrite(filePath);
+    await file.CopyToAsync(stream);
+
+    var scheme = httpContextAccessor.HttpContext!.Request.Scheme;
+    var hostName = httpContextAccessor.HttpContext!.Request.Host.Value;
+    var fileUri = $"{scheme}://{hostName}/{directoryPath}/{uniqueFileName}";
+
+    return Results.Ok(fileUri);
 });
 
 var todoItems = app.MapGroup("/todoitems");
@@ -113,4 +147,13 @@ static async Task<IResult> DeleteTodo(int id, TodoDbContext db)
     }
 
     return TypedResults.NotFound();
+}
+
+static string CreateTempfilePath()
+{
+    var filename = $"{Guid.NewGuid()}.tmp";
+    var directoryPath = Path.Combine("temp", "uploads");
+    if (!Directory.Exists(directoryPath)) Directory.CreateDirectory(directoryPath);
+
+    return Path.Combine(directoryPath, filename);
 }
