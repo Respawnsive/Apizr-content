@@ -16,8 +16,7 @@ public partial class TodoItemEditViewModel : BaseViewModel
         _connectivity = connectivity;
     }
 
-    [ObservableProperty]
-    TodoItem _todoItem;
+    [ObservableProperty] TodoItem _todoItem;
 
     [RelayCommand]
     private async Task SaveAsync()
@@ -27,6 +26,13 @@ public partial class TodoItemEditViewModel : BaseViewModel
 
         try
         {
+            if(string.IsNullOrWhiteSpace(TodoItem.Name))
+            {
+                await Shell.Current.DisplayAlert("Name required!",
+                    $"Please give it a name and try again.", "OK");
+                return;
+            }
+
             if (_connectivity.NetworkAccess != NetworkAccess.Internet)
             {
                 await Shell.Current.DisplayAlert("No connectivity!",

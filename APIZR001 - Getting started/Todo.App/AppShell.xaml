@@ -28,21 +28,9 @@
         </ResourceDictionary>
     </Shell.Resources>
 
-
-
     <ShellContent
         Title="TodoItems"
         ContentTemplate="{DataTemplate views:TodoItemsPage}"
-        Route="MainPage" />
-
-    <ShellContent
-        Title="TodoItemDetails"
-        ContentTemplate="{DataTemplate views:TodoItemDetailsPage}"
-        Route="TodoItemDetailsPage" />
-
-    <ShellContent
-        Title="TodoItemEdit"
-        ContentTemplate="{DataTemplate views:TodoItemEditPage}"
-        Route="TodoItemEditPage" />
+        Route="TodoItemsPage" />
 
 </Shell>
