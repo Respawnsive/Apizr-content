@@ -1,6 +1,5 @@
 ﻿using Apizr;
 using Apizr.Transferring.Managing;
-using Apizr.Transferring.Requesting;
 using Refit;
 using StarCellar.App.Models;
 using StarCellar.App.Services;
@@ -11,12 +10,12 @@ namespace StarCellar.App.ViewModels;
 public partial class WineEditViewModel : BaseViewModel
 {
     private readonly IApizrManager<ICellarApi> _cellarManager;
-    private readonly IApizrUploadManager<IUploadApi<string>, string> _uploadManager;
+    private readonly IApizrUploadManagerWith<string> _uploadManager;
     private readonly IConnectivity _connectivity;
     private readonly IFilePicker _filePicker;
 
     public WineEditViewModel(IApizrManager<ICellarApi> cellarManager,
-        IApizrUploadManager<IUploadApi<string>, string> uploadManager, 
+        IApizrUploadManagerWith<string> uploadManager, 
         IConnectivity connectivity,
         IFilePicker filePicker)
     {
@@ -26,7 +25,7 @@ public partial class WineEditViewModel : BaseViewModel
         _filePicker = filePicker;
     }
 
-    [ObservableProperty] Wine _wine;
+    [ObservableProperty] private Wine _wine;
 
     [RelayCommand]
     private async Task SetImageAsync()

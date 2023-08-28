@@ -72,7 +72,7 @@ app.MapPost("/upload", async (IFormFile file, IHttpContextAccessor httpContextAc
     var hostName = httpContextAccessor.HttpContext!.Request.Host.Value;
     var fileUri = $"{scheme}://{hostName}/{directoryPath}/{uniqueFileName}";
 
-    return Results.Ok(fileUri);
+    return Results.Text(fileUri);
 });
 
 var wineRoutes = app.MapGroup("/wines");
@@ -98,30 +98,29 @@ static async Task<IResult> GetWine(int id, CellarDbContext db)
             : TypedResults.NotFound();
 }
 
-static async Task<IResult> CreateWine(WineDTO wineDTO, CellarDbContext db)
+static async Task<IResult> CreateWine(WineDTO wineDto, CellarDbContext db)
 {
-    var wine = new Wine
-    {
-        Stock = wineDTO.Stock,
-        Name = wineDTO.Name
-    };
+    var wine = new Wine(wineDto);
 
     db.Wines.Add(wine);
     await db.SaveChangesAsync();
 
-    wineDTO = new WineDTO(wine);
+    wineDto = new WineDTO(wine);
 
-    return TypedResults.Created($"/wines/{wine.Id}", wineDTO);
+    return TypedResults.Created($"/wines/{wine.Id}", wineDto);
 }
 
-static async Task<IResult> UpdateWine(int id, WineDTO wineDTO, CellarDbContext db)
+static async Task<IResult> UpdateWine(int id, WineDTO wineDto, CellarDbContext db)
 {
     var wine = await db.Wines.FindAsync(id);
 
     if (wine is null) return TypedResults.NotFound();
 
-    wine.Name = wineDTO.Name;
-    wine.Stock = wineDTO.Stock;
+    wine.Name = wineDto.Name;
+    wine.Description = wineDto.Description;
+    wine.ImageUrl = wineDto.ImageUrl;
+    wine.Stock = wineDto.Stock;
+    wine.Score = wineDto.Score;
 
     await db.SaveChangesAsync();
 
@@ -135,9 +134,9 @@ static async Task<IResult> DeleteWine(int id, CellarDbContext db)
         db.Wines.Remove(wine);
         await db.SaveChangesAsync();
 
-        var wineDTO = new WineDTO(wine);
+        var wineDto = new WineDTO(wine);
 
-        return TypedResults.Ok(wineDTO);
+        return TypedResults.Ok(wineDto);
     }
 
     return TypedResults.NotFound();

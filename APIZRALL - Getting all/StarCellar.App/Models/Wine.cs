@@ -1,11 +1,11 @@
 ﻿namespace StarCellar.App.Models;
 
-public class Wine
+public partial class Wine : ObservableObject
 {
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string Description { get; set; }
-    public string ImageUrl { get; set; }
-    public int Stock { get; set; }
-    public int Score { get; set; }
+    [ObservableProperty] private int _id;
+    [ObservableProperty] private string _name;
+    [ObservableProperty] private string _description;
+    [ObservableProperty] private string _imageUrl;
+    [ObservableProperty] private int _stock;
+    [ObservableProperty] private int _score;
 }
