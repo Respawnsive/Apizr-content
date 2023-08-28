@@ -5,6 +5,8 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 using StarCellar.Api;
 
+const string directoryPath = "Uploads";
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<CellarDbContext>(opt => opt.UseInMemoryDatabase("WineDb"));
@@ -34,6 +36,14 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 var app = builder.Build();
 
+app.Lifetime.ApplicationStarted.Register(() =>
+{
+    if (Directory.Exists(directoryPath))
+        Directory.Delete(directoryPath, true);
+
+    Directory.CreateDirectory(directoryPath);
+});
+
 app.UseHttpsRedirection();
 app.UseSwagger();
 app.UseSwaggerUI();
@@ -58,13 +68,8 @@ app.MapPost("/upload", async (IFormFile file, IHttpContextAccessor httpContextAc
         , "_"
         , Guid.NewGuid().ToString().AsSpan(0, 4)
         , Path.GetExtension(fileName));
-
-    var directoryPath = "Uploads";
+    
     var filePath = Path.Combine(directoryPath, uniqueFileName);
-
-    if (!Directory.Exists(directoryPath)) 
-        Directory.CreateDirectory(directoryPath);
-
     await using var stream = File.OpenWrite(filePath);
     await file.CopyToAsync(stream);
 
