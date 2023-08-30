@@ -13,11 +13,7 @@
     <ContentPage.Behaviors>
         <mct:EventToCommandBehavior Command="{Binding AppearingCommand}" EventName="Appearing" />
     </ContentPage.Behaviors>
-    <Grid
-        BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground},
-                                          Dark={StaticResource DarkBackground}}"
-        RowDefinitions="*,Auto"
-        RowSpacing="0">
+    <Grid RowDefinitions="*,Auto" RowSpacing="0">
         <RefreshView Command="{Binding GetWinesCommand}" IsRefreshing="{Binding IsRefreshing}">
             <ContentView>
                 <CollectionView ItemsSource="{Binding Wines}" SelectionMode="None">
@@ -32,7 +28,7 @@
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="models:Wine">
                             <Grid Padding="10" HorizontalOptions="Fill">
-                                <Frame HeightRequest="125" Style="{StaticResource CardView}">
+                                <Frame HeightRequest="125">
                                     <Frame.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:CellarViewModel}}, Path=GoToDetailsCommand}" CommandParameter="{Binding .}" />
                                     </Frame.GestureRecognizers>
@@ -46,8 +42,8 @@
                                             Grid.Column="1"
                                             Padding="10"
                                             VerticalOptions="Center">
-                                            <Label Style="{StaticResource LargeLabel}" Text="{Binding Name}" />
-                                            <Label Style="{StaticResource MediumLabel}" Text="{Binding Id}" />
+                                            <Label Text="{Binding Name}" />
+                                            <Label Text="{Binding Id}" />
                                         </VerticalStackLayout>
                                     </Grid>
                                 </Frame>
@@ -63,7 +59,6 @@
             Margin="8"
             Command="{Binding GoToEditCommand}"
             IsEnabled="{Binding IsNotBusy}"
-            Style="{StaticResource ButtonOutline}"
             Text="Add wine" />
 
 

@@ -7,16 +7,11 @@
     Title="{Binding Wine.Name}"
     x:DataType="viewModels:WineEditViewModel">
 
-    <Grid
-        BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground},
-                                          Dark={StaticResource DarkBackground}}"
-        RowDefinitions="*,Auto"
-        RowSpacing="0">
+    <Grid RowDefinitions="*,Auto" RowSpacing="0">
         <ScrollView Grid.Row="0">
             <Grid RowDefinitions="Auto,Auto,*">
                 <BoxView
                     Grid.Row="0"
-                    BackgroundColor="{StaticResource Primary}"
                     HorizontalOptions="Fill"
                     VerticalOptions="Fill" />
 
@@ -49,9 +44,7 @@
                     FontAttributes="Bold"
                     HorizontalOptions="Fill"
                     Placeholder="name..."
-                    Style="{StaticResource LargeEditor}"
-                    Text="{Binding Wine.Name}"
-                    TextColor="White" />
+                    Text="{Binding Wine.Name}" />
                 <Editor
                     Grid.Row="2"
                     Margin="0,0,0,8"
@@ -59,9 +52,7 @@
                     FontAttributes="Bold"
                     HorizontalOptions="Fill"
                     Placeholder="notes..."
-                    Style="{StaticResource LargeEditor}"
-                    Text="{Binding Wine.Description}"
-                    TextColor="White" />
+                    Text="{Binding Wine.Description}" />
             </Grid>
         </ScrollView>
 
@@ -70,7 +61,6 @@
             Margin="8"
             Command="{Binding SaveCommand}"
             IsEnabled="{Binding IsNotBusy}"
-            Style="{StaticResource ButtonOutline}"
             Text="Save" />
 
 
@@ -79,7 +69,6 @@
             HorizontalOptions="Fill"
             IsRunning="{Binding IsBusy}"
             IsVisible="{Binding IsBusy}"
-            VerticalOptions="Center"
-            Color="{StaticResource Primary}" />
+            VerticalOptions="Center" />
     </Grid>
 </ContentPage>

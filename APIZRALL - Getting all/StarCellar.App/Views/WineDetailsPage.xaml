@@ -7,16 +7,11 @@
     Title="{Binding Wine.Name}"
     x:DataType="viewModels:WineDetailsViewModel">
 
-    <Grid
-        BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground},
-                                          Dark={StaticResource DarkBackground}}"
-        RowDefinitions="*,Auto"
-        RowSpacing="0">
+    <Grid RowDefinitions="*,Auto" RowSpacing="0">
         <ScrollView Grid.Row="0">
             <Grid RowDefinitions="Auto,Auto,*">
                 <BoxView
                     Grid.RowSpan="2"
-                    BackgroundColor="{StaticResource Primary}"
                     HorizontalOptions="Fill"
                     VerticalOptions="Fill" />
 
@@ -42,7 +37,6 @@
                     Margin="0,0,0,8"
                     FontAttributes="Bold"
                     HorizontalOptions="Center"
-                    Style="{StaticResource LargeLabel}"
                     Text="{Binding Wine.Name}"
                     TextColor="White" />
 
@@ -51,7 +45,6 @@
                     Margin="0,0,0,8"
                     FontAttributes="Bold"
                     HorizontalOptions="Center"
-                    Style="{StaticResource LargeLabel}"
                     Text="{Binding Wine.Description}"
                     TextColor="White" />
             </Grid>
@@ -63,7 +56,6 @@
                 Margin="8"
                 Command="{Binding GoToEditCommand}"
                 IsEnabled="{Binding IsNotBusy}"
-                Style="{StaticResource ButtonOutline}"
                 Text="Edit wine infos" />
 
             <Button
@@ -71,7 +63,6 @@
                 Margin="8"
                 Command="{Binding DeleteWineCommand}"
                 IsEnabled="{Binding IsNotBusy}"
-                Style="{StaticResource ButtonOutline}"
                 Text="Remove wine" />
         </Grid>
     </Grid>
