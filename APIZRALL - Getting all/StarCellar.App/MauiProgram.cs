@@ -1,7 +1,7 @@
 ﻿using Apizr;
 using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
-using StarCellar.App.Services;
+using StarCellar.App.Services.Apis.Cellar;
 using StarCellar.App.ViewModels;
 using StarCellar.App.Views;
 using UraniumUI;

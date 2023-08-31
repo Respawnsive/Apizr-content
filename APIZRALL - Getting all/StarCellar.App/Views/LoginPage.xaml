@@ -28,7 +28,7 @@
                 Spacing="30"
                 VerticalOptions="Center">
 
-                <input:FormView>
+                <input:FormView Spacing="20" SubmitCommand="{Binding LoginCommand}">
                     <material:TextField
                         Title="E-mail"
                         AccentColor="Black"
@@ -60,27 +60,17 @@
                         <Button
                             input:FormView.IsSubmitButton="True"
                             BackgroundColor="#D95716"
-                            Command="{Binding LoginCommand}"
                             CornerRadius="20"
                             FontAttributes="Bold"
                             FontSize="Medium"
-                            Text="LOGIN">
-                            <Button.Triggers>
-                                <DataTrigger
-                                    Binding="{Binding LoginCommand.IsRunning}"
-                                    TargetType="Button"
-                                    Value="True">
-                                    <Setter Property="Text" Value="" />
-                                </DataTrigger>
-                            </Button.Triggers>
-                        </Button>
+                            Text="LOGIN" />
 
                         <ActivityIndicator
                             HorizontalOptions="Center"
                             IsRunning="{Binding LoginCommand.IsRunning}"
                             IsVisible="{Binding LoginCommand.IsRunning}"
                             VerticalOptions="Center"
-                            Color="White" />
+                            Color="#D95716" />
 
                     </Grid>
 

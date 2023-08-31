@@ -1,6 +1,6 @@
 ﻿using Apizr;
 using StarCellar.App.Models;
-using StarCellar.App.Services;
+using StarCellar.App.Services.Apis.Cellar;
 using StarCellar.App.Views;
 
 namespace StarCellar.App.ViewModels;

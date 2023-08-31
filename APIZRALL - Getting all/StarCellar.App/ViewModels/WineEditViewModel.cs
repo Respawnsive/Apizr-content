@@ -2,7 +2,7 @@
 using Apizr.Transferring.Managing;
 using Refit;
 using StarCellar.App.Models;
-using StarCellar.App.Services;
+using StarCellar.App.Services.Apis.Cellar;
 
 namespace StarCellar.App.ViewModels;
 
