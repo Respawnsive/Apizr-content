@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="StarCellar.App.Views.WineEditPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewModels="clr-namespace:StarCellar.App.ViewModels"
+    Title="{Binding Wine.Name}"
+    x:DataType="viewModels:WineEditViewModel">
+
+    <Grid RowDefinitions="*,Auto" RowSpacing="0">
+        <ScrollView Grid.Row="0">
+            <Grid RowDefinitions="Auto,Auto,*">
+                <BoxView
+                    Grid.Row="0"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Fill" />
+
+                <Border
+                    Grid.Row="0"
+                    Margin="0,8,0,0"
+                    HeightRequest="160"
+                    HorizontalOptions="Center"
+                    Stroke="White"
+                    StrokeShape="RoundRectangle 80"
+                    StrokeThickness="6"
+                    VerticalOptions="Center"
+                    WidthRequest="160">
+                    <Image
+                        Aspect="AspectFill"
+                        HeightRequest="160"
+                        HorizontalOptions="Center"
+                        Source="{Binding Wine.ImageUrl, TargetNullValue='wine_bottle.png', FallbackValue='wine_bottle.png'}"
+                        VerticalOptions="Center"
+                        WidthRequest="160">
+                        <Image.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SetImageCommand}" />
+                        </Image.GestureRecognizers>
+                    </Image>
+                </Border>
+                <Editor
+                    Grid.Row="1"
+                    Margin="0,0,0,8"
+                    AutoSize="TextChanges"
+                    FontAttributes="Bold"
+                    HorizontalOptions="Fill"
+                    Placeholder="name..."
+                    Text="{Binding Wine.Name}" />
+                <Editor
+                    Grid.Row="2"
+                    Margin="0,0,0,8"
+                    AutoSize="TextChanges"
+                    FontAttributes="Bold"
+                    HorizontalOptions="Fill"
+                    Placeholder="notes..."
+                    Text="{Binding Wine.Description}" />
+            </Grid>
+        </ScrollView>
+
+        <Button
+            Grid.Row="1"
+            Margin="8"
+            Command="{Binding SaveCommand}"
+            IsEnabled="{Binding IsNotBusy}"
+            Text="Save" />
+
+
+        <ActivityIndicator
+            Grid.RowSpan="2"
+            HorizontalOptions="Fill"
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}"
+            VerticalOptions="Center" />
+    </Grid>
+</ContentPage>

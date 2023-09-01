@@ -63,6 +63,8 @@ builder.Services.AddSwaggerGen(options =>
             {
                 new OpenApiSecurityScheme
                 {
+                    Name = "Bearer",
+                    In = ParameterLocation.Header,
                     Reference = new OpenApiReference
                     {
                         Type = ReferenceType.SecurityScheme,
@@ -138,21 +140,8 @@ builder.Services.AddAuthorization(options =>
         policy => policy.RequireAuthenticatedUser().RequireClaim("role", "user")
     );
     options.AddPolicy(
-        "own-profile",
-        policy =>
-            policy
-                .RequireAuthenticatedUser()
-                .RequireAssertion(context =>
-                {
-                    string userIdFromPath = "";
-                    if (context.Resource is HttpContext http)
-                        userIdFromPath = http.Request.Path.Value.Split('/').Last();
-                    else
-                        return false;
-                    UserClaimsValidator.TryValidate(context.User, out var user, out var errMsg);
-                    var userIdFromClaims = user.Id.ToString();
-                    return userIdFromPath == userIdFromClaims;
-                })
+        "profile",
+        policy => policy.RequireAuthenticatedUser().RequireClaim("role", "admin", "user")
     );
 });
 
@@ -179,7 +168,7 @@ app.MapPost("signup", Users.SignUpAsync);
 app.MapPost("signin", Users.SignInAsync);
 app.MapPost("refresh", Users.RefreshTokenAsync);
 app.MapDelete("signout", Users.SignOutAsync);
-app.MapGet("user/{id}", Users.GetProfileAsync).RequireAuthorization("own-profile");
+app.MapGet("user", Users.GetProfileAsync).RequireAuthorization("profile");
 
 app.UseStaticFiles(new StaticFileOptions
 {

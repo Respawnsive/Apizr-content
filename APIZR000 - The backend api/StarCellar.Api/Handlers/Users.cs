@@ -121,8 +121,17 @@ namespace StarCellar.Api.Handlers
             return Ok(accessToken);
         }
 
-        internal static async Task<IResult> GetProfileAsync(AppDbContext appContext, Guid id) =>
-            Results.Ok(await appContext.Users.FindAsync(id));
+        internal static async Task<IResult> GetProfileAsync(
+            IHttpContextAccessor httpContextAccessor,
+            AppDbContext appContext)
+        {
+            if (!UserClaimsValidator.TryValidate(httpContextAccessor.HttpContext?.User, out var user, out var errMsg))
+                return BadRequest(errMsg);
+
+            var dbUser = await appContext.Users.FindAsync(user.Id);
+            return dbUser == null ? NotFound() : Ok(dbUser);
+
+        }
 
         internal static async Task<IResult> SignOutAsync
         (

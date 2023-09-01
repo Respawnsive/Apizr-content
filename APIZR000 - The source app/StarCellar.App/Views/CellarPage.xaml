@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="StarCellar.App.Views.CellarPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:models="clr-namespace:StarCellar.App.Models"
+    xmlns:viewModels="clr-namespace:StarCellar.App.ViewModels"
+    Title="My Cellar"
+    ios:Page.UseSafeArea="True"
+    x:DataType="viewModels:CellarViewModel">
+    <ContentPage.Behaviors>
+        <mct:EventToCommandBehavior Command="{Binding AppearingCommand}" EventName="Appearing" />
+    </ContentPage.Behaviors>
+    <Grid RowDefinitions="*,Auto" RowSpacing="0">
+        <RefreshView Command="{Binding GetWinesCommand}" IsRefreshing="{Binding IsRefreshing}">
+            <ContentView>
+                <CollectionView ItemsSource="{Binding Wines}" SelectionMode="None">
+                    <CollectionView.EmptyView>
+                        <StackLayout Padding="100">
+                            <Label
+                                HorizontalOptions="Center"
+                                Text="Pull to refresh items"
+                                VerticalOptions="Center" />
+                        </StackLayout>
+                    </CollectionView.EmptyView>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Wine">
+                            <Grid Padding="10" HorizontalOptions="Fill">
+                                <Frame HeightRequest="125">
+                                    <Frame.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:CellarViewModel}}, Path=GoToDetailsCommand}" CommandParameter="{Binding .}" />
+                                    </Frame.GestureRecognizers>
+                                    <Grid Padding="0" ColumnDefinitions="125,*,auto">
+                                        <Image
+                                            Aspect="AspectFill"
+                                            HeightRequest="125"
+                                            Source="{Binding ImageUrl, TargetNullValue='wine_bottle.png', FallbackValue='wine_bottle.png'}"
+                                            WidthRequest="125" />
+                                        <VerticalStackLayout
+                                            Grid.Column="1"
+                                            Padding="10"
+                                            VerticalOptions="Center">
+                                            <Label Text="{Binding Name}" />
+                                            <Label Text="{Binding Id}" />
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </Frame>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </ContentView>
+        </RefreshView>
+
+        <Button
+            Grid.Row="1"
+            Margin="8"
+            Command="{Binding GoToEditCommand}"
+            IsEnabled="{Binding IsNotBusy}"
+            Text="Add wine" />
+
+
+        <ActivityIndicator
+            Grid.RowSpan="2"
+            HorizontalOptions="Fill"
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}"
+            VerticalOptions="Center"
+            Color="{StaticResource Primary}" />
+    </Grid>
+</ContentPage>

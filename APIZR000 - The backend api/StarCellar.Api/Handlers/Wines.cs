@@ -10,7 +10,7 @@ namespace StarCellar.Api.Handlers
             .Wines.Select(wine => new WineDTO(wine.Id, wine.Name, wine.Description, wine.ImageUrl, wine.Stock,
                 wine.Score, wine.OwnerId)).ToArrayAsync());
 
-        internal static async Task<IResult> GetWine(int id, AppDbContext appContext)
+        internal static async Task<IResult> GetWine(Guid id, AppDbContext appContext)
         {
             return await appContext.Wines.FindAsync(id)
                 is { } wine
@@ -54,7 +54,7 @@ namespace StarCellar.Api.Handlers
             return TypedResults.Created($"/wines/{wineDto.Id}", wineDto);
         }
 
-        internal static async Task<IResult> UpdateWine(int id, WineDTO wineDto, AppDbContext appContext)
+        internal static async Task<IResult> UpdateWine(Guid id, WineDTO wineDto, AppDbContext appContext)
         {
             if (wineDto is null)
                 return TypedResults.BadRequest("Must include a Todo.");
@@ -77,7 +77,7 @@ namespace StarCellar.Api.Handlers
             return TypedResults.NoContent();
         }
 
-        internal static async Task<IResult> DeleteWine(int id, AppDbContext appContext)
+        internal static async Task<IResult> DeleteWine(Guid id, AppDbContext appContext)
         {
             if (await appContext.Wines.FindAsync(id) is not { } wine) 
                 return TypedResults.NotFound();

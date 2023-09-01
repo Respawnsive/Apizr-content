@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Shell
+    x:Class="StarCellar.App.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:StarCellar.App.Views">
+
+    <ShellContent
+        Title="Login"
+        ContentTemplate="{DataTemplate views:LoginPage}"
+        FlyoutItemIsVisible="False"
+        Route="LoginPage"
+        Shell.FlyoutBehavior="Disabled"
+        Shell.NavBarIsVisible="False" />
+
+    <FlyoutItem Title="Cellar">
+        <Tab>
+            <ShellContent
+                Title="Cellar"
+                ContentTemplate="{DataTemplate views:CellarPage}"
+                Route="CellarPage" />
+        </Tab>
+    </FlyoutItem>
+    <FlyoutItem Title="Profile">
+        <Tab>
+            <ShellContent
+                Title="Profile"
+                ContentTemplate="{DataTemplate views:ProfilePage}"
+                Route="ProfilePage" />
+        </Tab>
+    </FlyoutItem>
+
+    <Shell.FlyoutFooter>
+        <VerticalStackLayout>
+            <BoxView HeightRequest="1" Color="#cecece" />
+            <Button
+                BackgroundColor="White"
+                Clicked="Button_Clicked"
+                Text="Logout"
+                TextColor="Black" />
+        </VerticalStackLayout>
+    </Shell.FlyoutFooter>
+
+</Shell>
