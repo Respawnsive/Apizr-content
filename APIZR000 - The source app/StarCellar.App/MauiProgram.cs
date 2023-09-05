@@ -25,36 +25,29 @@ public static class MauiProgram
                 fonts.AddMaterialIconFonts();
             });
 #if DEBUG
-		builder.Logging.AddDebug();
-        builder.Logging.SetMinimumLevel(LogLevel.Trace);
+		builder.Logging.AddDebug()
+            .SetMinimumLevel(LogLevel.Trace);
 #endif
 
-		// Plugins
-    	builder.Services.AddSingleton(Connectivity.Current);
-        builder.Services.AddSingleton(FilePicker.Default);
-
-        // Services
-        builder.Services.AddRefitClient<ICellarApi>()
+		// Infrastructure
+    	builder.Services.AddSingleton(Connectivity.Current)
+            .AddSingleton(FilePicker.Default)
+            .AddRefitClient<ICellarApi>()
             .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://localhost:7015"));
 
         // Presentation
-        builder.Services.AddTransient<LoginViewModel>();
-        builder.Services.AddTransient<LoginPage>();
-
-        builder.Services.AddTransient<RegisterViewModel>();
-        builder.Services.AddTransient<RegisterPage>();
-
-        builder.Services.AddSingleton<CellarViewModel>();
-		builder.Services.AddSingleton<CellarPage>();
-
-		builder.Services.AddTransient<WineDetailsViewModel>();
-		builder.Services.AddTransient<WineDetailsPage>();
-
-        builder.Services.AddTransient<WineEditViewModel>();
-        builder.Services.AddTransient<WineEditPage>();
-
-        builder.Services.AddTransient<ProfileViewModel>();
-        builder.Services.AddTransient<ProfilePage>();
+        builder.Services.AddTransient<LoginViewModel>()
+            .AddTransient<LoginPage>()
+            .AddTransient<RegisterViewModel>()
+            .AddTransient<RegisterPage>()
+            .AddSingleton<CellarViewModel>()
+            .AddSingleton<CellarPage>()
+            .AddTransient<WineDetailsViewModel>()
+            .AddTransient<WineDetailsPage>()
+            .AddTransient<WineEditViewModel>()
+            .AddTransient<WineEditPage>()
+            .AddTransient<ProfileViewModel>()
+            .AddTransient<ProfilePage>();
 
         return builder.Build();
 	}

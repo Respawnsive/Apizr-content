@@ -12,6 +12,7 @@ using static Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -133,15 +134,15 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(
         "admin",
-        policy => policy.RequireAuthenticatedUser().RequireClaim("role", "admin")
+        policy => policy.RequireAuthenticatedUser().RequireClaim(ClaimTypes.Role, "admin")
     );
     options.AddPolicy(
         "user",
-        policy => policy.RequireAuthenticatedUser().RequireClaim("role", "user")
+        policy => policy.RequireAuthenticatedUser().RequireClaim(ClaimTypes.Role, "user")
     );
     options.AddPolicy(
-        "profile",
-        policy => policy.RequireAuthenticatedUser().RequireClaim("role", "admin", "user")
+        "account",
+        policy => policy.RequireAuthenticatedUser().RequireClaim(ClaimTypes.Role, "admin", "user")
     );
 });
 
@@ -166,9 +167,9 @@ app.UseAuthorization();
 
 app.MapPost("signup", Users.SignUpAsync);
 app.MapPost("signin", Users.SignInAsync);
-app.MapPost("refresh", Users.RefreshTokenAsync);
-app.MapDelete("signout", Users.SignOutAsync);
-app.MapGet("user", Users.GetProfileAsync).RequireAuthorization("profile");
+app.MapPost("refresh", Users.RefreshTokenAsync).RequireAuthorization("account");
+app.MapDelete("signout", Users.SignOutAsync).RequireAuthorization("account");
+app.MapGet("profile", Users.GetProfileAsync).RequireAuthorization("account");
 
 app.UseStaticFiles(new StaticFileOptions
 {

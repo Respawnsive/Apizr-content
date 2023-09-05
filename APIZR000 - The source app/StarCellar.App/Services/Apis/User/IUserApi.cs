@@ -9,7 +9,7 @@ namespace StarCellar.App.Services.Apis.User
         Task<Dtos.User> SignUpAsync(SignUpRequest request);
 
         [Post("signin")]
-        Task<string> SignInAsync(SignInRequest request);
+        Task<> SignInAsync(SignInRequest request);
 
         [Post("refresh")]
         Task<string> RefreshAsync();
