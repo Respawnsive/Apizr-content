@@ -16,7 +16,8 @@ namespace StarCellar.Api.Handlers
             )
         {
             if (user is null) return BadRequest();
-            if (!MiniValidator.TryValidate(user, out var errors)) return BadRequest(errors);
+            if (!MiniValidator.TryValidate(user, out var errors)) 
+                return BadRequest(errors);
 
             if (userManager.Users.Any(u => u.Email == user.Email))
                 return Conflict("Invalid `email`: A user with this email address already exists.");
@@ -25,23 +26,22 @@ namespace StarCellar.Api.Handlers
             {
                 user.Username = string.Join('_', user.FullName.Split(' ')).ToLower();
                 if (userManager.Users.Any(u => u.UserName == user.Username))
-                    user.Username = user.Username + '_' + Guid.NewGuid().ToString("N").Substring(0, 4);
+                    user.Username = user.Username + '_' + Guid.NewGuid().ToString("N")[..4];
             }
             else if (userManager.Users.Any(u => u.UserName == user.Username))
                 return Conflict("Invalid `username`: A user with this username already exists.");
 
             var newUser = new User(user);
             var result = await userManager.CreateAsync(newUser, user.Password);
-            if (!result.Succeeded) return BadRequest(result.Errors);
 
-            return Created($"/users/{newUser.Id}", newUser);
+            return result.Succeeded ? Created($"/users/{newUser.Id}", newUser) : BadRequest(result.Errors);
         }
 
         internal static async Task<IResult> SignInAsync
         (
             UserManager<User> userManager,
             TokenGenerator tokenGenerator,
-            TokenDbContext tokenContext,
+            UserRefreshTokenDbContext tokenContext,
             UserLoginDTO credentials,
             HttpResponse response
         )
@@ -61,64 +61,56 @@ namespace StarCellar.Api.Handlers
             var accessToken = tokenGenerator.GenerateAccessToken(user);
             var (refreshTokenId, refreshToken) = tokenGenerator.GenerateRefreshToken();
 
-            await tokenContext.Tokens.AddAsync(new Token { Id = refreshTokenId, UserId = user.Id });
+            var token = await tokenContext.UserRefreshTokens.Where(token => token.UserId == user.Id).FirstOrDefaultAsync();
+            if(token is not null)
+                tokenContext.UserRefreshTokens.Remove(token);
+
+            await tokenContext.UserRefreshTokens.AddAsync(new UserRefreshToken { Id = refreshTokenId, UserId = user.Id });
             await tokenContext.SaveChangesAsync();
 
-            response.Cookies.Append("refresh_token", refreshToken, new CookieOptions
-            {
-                Expires = DateTime.Now.AddDays(1),
-                HttpOnly = true,
-                IsEssential = true,
-                MaxAge = new TimeSpan(1, 0, 0, 0),
-                Secure = true,
-                SameSite = SameSiteMode.Strict
-            });
+            var tokens = new Tokens(accessToken, refreshToken);
 
-            return Ok(accessToken);
+            return Ok(tokens);
         }
 
         internal static async Task<IResult> RefreshTokenAsync
         (
-            HttpRequest request,
-            HttpResponse response,
-            TokenDbContext tokenContext,
+            UserRefreshTokenDbContext tokenContext,
             TokenValidator tokenValidator,
             TokenGenerator tokenGenerator,
-            AppDbContext appContext
+            AppDbContext appContext,
+            Tokens tokens,
+            HttpResponse response
         )
         {
-            var refreshToken = request.Cookies["refresh_token"];
+            if (string.IsNullOrWhiteSpace(tokens.AccessToken))
+                return BadRequest("Please include an access token in the request.");
 
-            if (string.IsNullOrWhiteSpace(refreshToken))
+            if (string.IsNullOrWhiteSpace(tokens.RefreshToken))
                 return BadRequest("Please include a refresh token in the request.");
 
-            var tokenIsValid = tokenValidator.TryValidate(refreshToken, out var tokenId);
-            if (!tokenIsValid) return BadRequest("Invalid refresh token.");
+            var accessTokenIsValid = tokenValidator.TryValidateAccessToken(tokens.AccessToken, out var claims, false);
+            if (!accessTokenIsValid) return BadRequest("Invalid access token.");
 
-            var token = await tokenContext.Tokens.Where(token => token.Id == tokenId).FirstOrDefaultAsync();
+            var refreshTokenIsValid = tokenValidator.TryValidateRefreshToken(tokens.RefreshToken, out var refreshTokenId);
+            if (!refreshTokenIsValid) return BadRequest("Invalid refresh token.");
+
+            var token = await tokenContext.UserRefreshTokens.Where(userRefreshToken => userRefreshToken.Id == refreshTokenId).FirstOrDefaultAsync();
             if (token is null) return BadRequest("Refresh token not found.");
 
             var user = await appContext.Users.Where(u => u.Id == token.UserId).FirstOrDefaultAsync();
-            if (user is null) return BadRequest("User not found.");
+            if (user is null || user.UserName != claims.Identity!.Name) return BadRequest("User not found.");
 
-            var accessToken = tokenGenerator.GenerateAccessToken(user);
+            var newAccessToken = tokenGenerator.GenerateAccessToken(user);
             var (newRefreshTokenId, newRefreshToken) = tokenGenerator.GenerateRefreshToken();
 
-            tokenContext.Tokens.Remove(token);
-            await tokenContext.Tokens.AddAsync(new Token { Id = newRefreshTokenId, UserId = user.Id });
+            tokenContext.UserRefreshTokens.Remove(token);
+            await tokenContext.UserRefreshTokens.AddAsync(new UserRefreshToken { Id = newRefreshTokenId, UserId = user.Id });
             await tokenContext.SaveChangesAsync();
 
-            response.Cookies.Append("refresh_token", newRefreshToken, new CookieOptions
-            {
-                Expires = DateTime.Now.AddDays(1),
-                HttpOnly = true,
-                IsEssential = true,
-                MaxAge = new TimeSpan(1, 0, 0, 0),
-                Secure = true,
-                SameSite = SameSiteMode.Strict
-            });
+            var newTokens = new Tokens(newAccessToken, newRefreshToken);
 
-            return Ok(accessToken);
+            return Ok(newTokens);
         }
 
         internal static async Task<IResult> GetProfileAsync(
@@ -137,7 +129,7 @@ namespace StarCellar.Api.Handlers
         (
             HttpRequest request,
             HttpResponse response,
-            TokenDbContext tokenContext,
+            UserRefreshTokenDbContext tokenContext,
             TokenValidator tokenValidator
         )
         {
@@ -146,13 +138,13 @@ namespace StarCellar.Api.Handlers
             if (string.IsNullOrWhiteSpace(refreshToken))
                 return BadRequest("Please include a refresh token in the request.");
 
-            var tokenIsValid = tokenValidator.TryValidate(refreshToken, out var tokenId);
+            var tokenIsValid = tokenValidator.TryValidateRefreshToken(refreshToken, out var tokenId);
             if (!tokenIsValid) return BadRequest("Invalid refresh token.");
 
-            var token = await tokenContext.Tokens.Where(token => token.Id == tokenId).FirstOrDefaultAsync();
+            var token = await tokenContext.UserRefreshTokens.Where(token => token.Id == tokenId).FirstOrDefaultAsync();
             if (token is null) return BadRequest("Refresh token not found.");
 
-            tokenContext.Tokens.Remove(token);
+            tokenContext.UserRefreshTokens.Remove(token);
             await tokenContext.SaveChangesAsync();
 
             response.Cookies.Delete("refresh_token");

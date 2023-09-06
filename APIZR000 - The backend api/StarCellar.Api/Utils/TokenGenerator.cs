@@ -12,6 +12,8 @@ namespace StarCellar.Api.Utils
         private readonly byte[] _refreshTokenSecret;
         private readonly string _issuer;
         private readonly string _audience;
+        private readonly int _accessTokenValidityInMinutes;
+        private readonly int _refreshTokenValidityInDays;
 
         public TokenGenerator(IConfiguration config)
         {
@@ -19,6 +21,8 @@ namespace StarCellar.Api.Utils
             _refreshTokenSecret = Encoding.ASCII.GetBytes(config.GetValue<string>("Jwt:RefreshTokenSecret")!);
             _issuer = config.GetValue<string>("Jwt:Issuer")!;
             _audience = config.GetValue<string>("Jwt:Audience")!;
+            _accessTokenValidityInMinutes = config.GetValue<int>("Jwt:AccessTokenValidityInMinutes")!;
+            _refreshTokenValidityInDays = config.GetValue<int>("Jwt:RefreshTokenValidityInDays")!;
         }
 
         public string GenerateAccessToken(User user)
@@ -36,7 +40,7 @@ namespace StarCellar.Api.Utils
                     new Claim(ClaimTypes.Role, user.Role),
                     }
                 ),
-                Expires = DateTime.UtcNow.AddMinutes(15),
+                Expires = DateTime.UtcNow.AddMinutes(_accessTokenValidityInMinutes),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(_accessTokenSecret),
                     SecurityAlgorithms.HmacSha256Signature
@@ -57,7 +61,7 @@ namespace StarCellar.Api.Utils
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] { new Claim(JwtRegisteredClaimNames.Jti, tokenId.ToString()), }),
-                Expires = DateTime.UtcNow.AddDays(1),
+                Expires = DateTime.UtcNow.AddDays(_refreshTokenValidityInDays),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(_refreshTokenSecret),
                     SecurityAlgorithms.HmacSha256Signature

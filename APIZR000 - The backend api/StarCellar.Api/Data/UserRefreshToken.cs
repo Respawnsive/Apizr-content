@@ -2,7 +2,7 @@
 
 namespace StarCellar.Api.Data
 {
-    public record Token
+    public record UserRefreshToken
     {
         [Key]
         public Guid Id { get; init; }

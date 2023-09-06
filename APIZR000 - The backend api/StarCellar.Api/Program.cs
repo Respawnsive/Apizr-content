@@ -13,22 +13,25 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var accessTokenSecret = builder.Configuration["Jwt:AccessTokenSecret"];
+// Set
 var isProduction = builder.Environment.IsProduction();
+var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
+var version = $"{versionInfo.FileMajorPart}.{versionInfo.ProductMinorPart}.{versionInfo.ProductBuildPart}";
 
+// Configure
 builder.Services.Configure<JsonOptions>(options =>
 {
     options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     options.SerializerOptions.Converters.Add(new UserConverter());
 });
 
+// Add
 builder.Services.AddEndpointsApiExplorer();
 
-var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
-var version = $"{versionInfo.FileMajorPart}.{versionInfo.ProductMinorPart}.{versionInfo.ProductBuildPart}";
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc($"v1", new OpenApiInfo
@@ -78,18 +81,9 @@ builder.Services.AddSwaggerGen(options =>
     );
 });
 
-builder.Services.AddDbContext<AppDbContext>(
-    optionsBuilder =>
-        optionsBuilder
-            .UseSqlite("Data Source=app.db")
-            .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()))
-            .EnableDetailedErrors()
-            .ConfigureWarnings(b => b.Log(ConnectionOpened, CommandExecuted, ConnectionClosed))
-);
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddDbContext<TokenDbContext>(
-    optionsBuilder => optionsBuilder.UseInMemoryDatabase("Tokens")
-);
+builder.Services.AddDbContext<UserRefreshTokenDbContext>(optionsBuilder => optionsBuilder.UseInMemoryDatabase("UserRefreshTokens"));
 
 builder.Services.AddSingleton<TokenGenerator>();
 builder.Services.AddSingleton<TokenValidator>();
@@ -118,7 +112,7 @@ builder.Services
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(accessTokenSecret)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:AccessTokenSecret"]!)),
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
             ValidateIssuerSigningKey = true,
@@ -133,16 +127,16 @@ builder.Services
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(
-        "admin",
-        policy => policy.RequireAuthenticatedUser().RequireClaim(ClaimTypes.Role, "admin")
+        Constants.Policies.Admin,
+        policy => policy.RequireAuthenticatedUser().RequireClaim(ClaimTypes.Role, Constants.Roles.Admin)
     );
     options.AddPolicy(
-        "user",
-        policy => policy.RequireAuthenticatedUser().RequireClaim(ClaimTypes.Role, "user")
+        Constants.Policies.User,
+        policy => policy.RequireAuthenticatedUser().RequireClaim(ClaimTypes.Role, Constants.Roles.User)
     );
     options.AddPolicy(
-        "account",
-        policy => policy.RequireAuthenticatedUser().RequireClaim(ClaimTypes.Role, "admin", "user")
+        Constants.Policies.Any,
+        policy => policy.RequireAuthenticatedUser().RequireClaim(ClaimTypes.Role, Constants.Roles.Admin, Constants.Roles.User)
     );
 });
 
@@ -150,6 +144,7 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 var app = builder.Build();
 
+// Register
 app.Lifetime.ApplicationStarted.Register(() =>
 {
     if (Directory.Exists(Constants.DirectoryPath))
@@ -158,19 +153,12 @@ app.Lifetime.ApplicationStarted.Register(() =>
     Directory.CreateDirectory(Constants.DirectoryPath);
 });
 
+// Use
 app.UseHttpsRedirection();
 app.UseSwagger();
 app.UseSwaggerUI();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapPost("signup", Users.SignUpAsync);
-app.MapPost("signin", Users.SignInAsync);
-app.MapPost("refresh", Users.RefreshTokenAsync).RequireAuthorization("account");
-app.MapDelete("signout", Users.SignOutAsync).RequireAuthorization("account");
-app.MapGet("profile", Users.GetProfileAsync).RequireAuthorization("account");
-
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(
@@ -178,11 +166,18 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/uploads"
 });
 
+// Map
 app.Map("/", async context =>
 {
     await Task.CompletedTask;
     context.Response.Redirect("/swagger");
 });
+
+app.MapPost("signup", Users.SignUpAsync);
+app.MapPost("signin", Users.SignInAsync);
+app.MapPost("refresh", Users.RefreshTokenAsync);
+app.MapDelete("signout", Users.SignOutAsync).RequireAuthorization(Constants.Policies.Any);
+app.MapGet("profile", Users.GetProfileAsync).RequireAuthorization(Constants.Policies.Any);
 
 app.MapPost("/upload", Files.UploadAsync);
 
@@ -193,4 +188,5 @@ wineRoutes.MapPost("/", Wines.CreateWine).WithOpenApi();
 wineRoutes.MapPut("/{id}", Wines.UpdateWine).WithOpenApi();
 wineRoutes.MapDelete("/{id}", Wines.DeleteWine).WithOpenApi();
 
+// Run
 app.Run();
