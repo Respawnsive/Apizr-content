@@ -55,7 +55,7 @@ namespace StarCellar.Api.Utils
             }
         }
 
-        public bool TryValidateRefreshToken(string refreshToken, out Guid tokenId)
+        public bool TryValidateRefreshToken(string refreshToken, out Guid tokenId, bool validateLifetime = true)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenValidationParams = new TokenValidationParameters
@@ -64,7 +64,7 @@ namespace StarCellar.Api.Utils
                 IssuerSigningKey = new SymmetricSecurityKey(_refreshTokenSecret),
                 ValidateIssuer = true,
                 ValidateAudience = true,
-                ValidateLifetime = true,
+                ValidateLifetime = validateLifetime,
                 ClockSkew = TimeSpan.Zero,
                 ValidAudience = _audience,
                 ValidIssuer = _issuer,

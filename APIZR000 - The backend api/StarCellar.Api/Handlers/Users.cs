@@ -130,24 +130,22 @@ namespace StarCellar.Api.Handlers
             HttpRequest request,
             HttpResponse response,
             UserRefreshTokenDbContext tokenContext,
+            Tokens tokens,
             TokenValidator tokenValidator
         )
         {
-            var refreshToken = request.Cookies["refresh_token"];
-
-            if (string.IsNullOrWhiteSpace(refreshToken))
+            if (string.IsNullOrWhiteSpace(tokens.RefreshToken))
                 return BadRequest("Please include a refresh token in the request.");
 
-            var tokenIsValid = tokenValidator.TryValidateRefreshToken(refreshToken, out var tokenId);
-            if (!tokenIsValid) return BadRequest("Invalid refresh token.");
+            var refreshTokenIsValid = tokenValidator.TryValidateRefreshToken(tokens.RefreshToken, out var refreshTokenId, false);
+            if (!refreshTokenIsValid) return BadRequest("Invalid refresh token.");
 
-            var token = await tokenContext.UserRefreshTokens.Where(token => token.Id == tokenId).FirstOrDefaultAsync();
+            var token = await tokenContext.UserRefreshTokens.Where(userRefreshToken => userRefreshToken.Id == refreshTokenId).FirstOrDefaultAsync();
             if (token is null) return BadRequest("Refresh token not found.");
 
             tokenContext.UserRefreshTokens.Remove(token);
             await tokenContext.SaveChangesAsync();
 
-            response.Cookies.Delete("refresh_token");
             return NoContent();
         }
     }

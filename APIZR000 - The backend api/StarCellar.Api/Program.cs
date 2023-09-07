@@ -8,12 +8,10 @@ using StarCellar.Api.Handlers;
 using StarCellar.Api.Utils;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http.Json;
-using static Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
-using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
