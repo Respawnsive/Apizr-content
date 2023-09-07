@@ -26,7 +26,7 @@ namespace StarCellar.Api.Data
 
     public record UserDTO
     {
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         [Required]
         public string UserName { get; set; }
@@ -44,18 +44,17 @@ namespace StarCellar.Api.Data
 
         public string Address { get; set; }
 
-        public User ToEntity()
+        public UserDTO() { }
+
+        public UserDTO(User user)
         {
-            return new User
-            {
-                Id = Guid.TryParse(Id, out Guid UserId) ? UserId : Guid.NewGuid(),
-                UserName = UserName,
-                FullName = FullName,
-                Email = Email,
-                Age = Age,
-                Role = Role,
-                Address = Address
-            };
+            Id = user.Id;
+            FullName = user.FullName;
+            Email = user.Email;
+            UserName = user.UserName;
+            Age = user.Age;
+            Role = user.Role;
+            Address = user.Address;
         }
     }
 
@@ -77,6 +76,7 @@ namespace StarCellar.Api.Data
         public string FullName { get; set; }
 
         public string Username { get; set; }
+
         public int Age { get; set; }
 
         [Required]

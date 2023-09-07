@@ -15,7 +15,7 @@ public partial class AppShell : Shell
 
     private async void Button_Clicked(object sender, EventArgs e)
     {
-        Preferences.Default.Clear();
+        SecureStorage.Default.RemoveAll();
         await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
     }
 }

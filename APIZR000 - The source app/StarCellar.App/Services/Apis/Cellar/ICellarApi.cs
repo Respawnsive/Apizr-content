@@ -9,15 +9,15 @@ namespace StarCellar.App.Services.Apis.Cellar
         Task<IEnumerable<Wine>> GetWinesAsync();
 
         [Get("/wines/{id}")]
-        Task<Wine> GetWineDetailsAsync(int id);
+        Task<Wine> GetWineDetailsAsync(Guid id);
 
         [Post("/wines")]
         Task<Wine> CreateWineAsync(Wine item);
         
         [Put("/wines/{id}")]
-        Task UpdateWineAsync(int id, Wine item);
+        Task UpdateWineAsync(Guid id, Wine item);
         
         [Delete("/wines/{id}")]
-        Task DeleteWineAsync(int id);
+        Task DeleteWineAsync(Guid id);
     }
 }

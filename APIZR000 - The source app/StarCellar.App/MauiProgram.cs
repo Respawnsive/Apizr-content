@@ -2,6 +2,9 @@
 using Microsoft.Extensions.Logging;
 using Refit;
 using StarCellar.App.Services.Apis.Cellar;
+using StarCellar.App.Services.Apis.Files;
+using StarCellar.App.Services.Apis.User;
+using StarCellar.App.Services.Apis.User.Dtos;
 using StarCellar.App.ViewModels;
 using StarCellar.App.Views;
 using UraniumUI;
@@ -30,9 +33,29 @@ public static class MauiProgram
 #endif
 
 		// Infrastructure
-    	builder.Services.AddSingleton(Connectivity.Current)
+        builder.Services.AddSingleton(Connectivity.Current)
             .AddSingleton(FilePicker.Default)
-            .AddRefitClient<ICellarApi>()
+            .AddSingleton(SecureStorage.Default);
+
+        builder.Services.AddRefitClient<IUserApi>(serviceProvider => new RefitSettings
+            {
+                AuthorizationHeaderValueGetter = (_, _) =>
+                    serviceProvider.GetRequiredService<ISecureStorage>().GetAsync(nameof(Tokens.AccessToken))
+            })
+            .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://localhost:7015"));
+
+        builder.Services.AddRefitClient<ICellarApi>(serviceProvider => new RefitSettings
+            {
+                AuthorizationHeaderValueGetter = (_, _) =>
+                    serviceProvider.GetRequiredService<ISecureStorage>().GetAsync(nameof(Tokens.AccessToken))
+            })
+            .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://localhost:7015"));
+
+        builder.Services.AddRefitClient<IFileApi>(serviceProvider => new RefitSettings
+            {
+                AuthorizationHeaderValueGetter = (_, _) =>
+                    serviceProvider.GetRequiredService<ISecureStorage>().GetAsync(nameof(Tokens.AccessToken))
+            })
             .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://localhost:7015"));
 
         // Presentation

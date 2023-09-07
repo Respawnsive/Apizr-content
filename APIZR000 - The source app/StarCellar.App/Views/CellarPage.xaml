@@ -3,9 +3,9 @@
     x:Class="StarCellar.App.Views.CellarPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:dtos="clr-namespace:StarCellar.App.Services.Apis.Cellar.Dtos"
     xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
     xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-    xmlns:models="clr-namespace:StarCellar.App.Models"
     xmlns:viewModels="clr-namespace:StarCellar.App.ViewModels"
     Title="My Cellar"
     ios:Page.UseSafeArea="True"
@@ -26,7 +26,7 @@
                         </StackLayout>
                     </CollectionView.EmptyView>
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:Wine">
+                        <DataTemplate x:DataType="dtos:Wine">
                             <Grid Padding="10" HorizontalOptions="Fill">
                                 <Frame HeightRequest="125">
                                     <Frame.GestureRecognizers>

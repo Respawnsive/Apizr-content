@@ -2,7 +2,7 @@
 
 namespace StarCellar.Api.Handlers
 {
-    internal static class Files
+    internal static class FilesHandler
     {
         internal static async Task<IResult> UploadAsync(IFormFile file, IHttpContextAccessor httpContextAccessor)
         {

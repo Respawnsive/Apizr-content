@@ -1,5 +1,13 @@
 ﻿namespace StarCellar.App.Services.Apis.Cellar.Dtos
 {
-    public record Wine(Guid Id, string Name, string Description, string ImageUrl, int Stock, int Score,
-        Guid OwnerId);
+    public class Wine
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string ImageUrl { get; set; }
+        public int Stock { get; set; }
+        public int Score { get; set; }
+        public Guid OwnerId { get; set; }
+    }
 }

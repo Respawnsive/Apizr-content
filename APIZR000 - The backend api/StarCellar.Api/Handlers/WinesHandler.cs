@@ -4,7 +4,7 @@ using StarCellar.Api.Data;
 
 namespace StarCellar.Api.Handlers
 {
-    internal static class Wines
+    internal static class WinesHandler
     {
         internal static async Task<IResult> GetAllWines(AppDbContext appContext) => TypedResults.Ok(await appContext
             .Wines.Select(wine => new WineDTO(wine.Id, wine.Name, wine.Description, wine.ImageUrl, wine.Stock,

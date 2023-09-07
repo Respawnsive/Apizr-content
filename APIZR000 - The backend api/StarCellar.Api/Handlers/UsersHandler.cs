@@ -7,7 +7,7 @@ using static Microsoft.AspNetCore.Http.Results;
 
 namespace StarCellar.Api.Handlers
 {
-    public static class Users
+    public static class UsersHandler
     {
         internal static async Task<IResult> SignUpAsync(
             AppDbContext appContext, 
@@ -34,7 +34,9 @@ namespace StarCellar.Api.Handlers
             var newUser = new User(user);
             var result = await userManager.CreateAsync(newUser, user.Password);
 
-            return result.Succeeded ? Created($"/users/{newUser.Id}", newUser) : BadRequest(result.Errors);
+            var userDto = new UserDTO(newUser);
+
+            return result.Succeeded ? Created($"/users/{userDto.Id}", userDto) : BadRequest(result.Errors);
         }
 
         internal static async Task<IResult> SignInAsync

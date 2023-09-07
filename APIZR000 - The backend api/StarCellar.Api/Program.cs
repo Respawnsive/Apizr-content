@@ -171,20 +171,20 @@ app.Map("/", async context =>
     context.Response.Redirect("/swagger");
 });
 
-app.MapPost("signup", Users.SignUpAsync);
-app.MapPost("signin", Users.SignInAsync);
-app.MapPost("refresh", Users.RefreshTokenAsync);
-app.MapDelete("signout", Users.SignOutAsync).RequireAuthorization(Constants.Policies.Any);
-app.MapGet("profile", Users.GetProfileAsync).RequireAuthorization(Constants.Policies.Any);
+app.MapPost("signup", UsersHandler.SignUpAsync);
+app.MapPost("signin", UsersHandler.SignInAsync);
+app.MapPost("refresh", UsersHandler.RefreshTokenAsync);
+app.MapPost("signout", UsersHandler.SignOutAsync).RequireAuthorization(Constants.Policies.Any);
+app.MapGet("profile", UsersHandler.GetProfileAsync).RequireAuthorization(Constants.Policies.Any);
 
-app.MapPost("/upload", Files.UploadAsync);
+app.MapPost("/upload", FilesHandler.UploadAsync);
 
 var wineRoutes = app.MapGroup("/wines");
-wineRoutes.MapGet("/", Wines.GetAllWines).WithOpenApi();
-wineRoutes.MapGet("/{id}", Wines.GetWine).WithOpenApi();
-wineRoutes.MapPost("/", Wines.CreateWine).WithOpenApi();
-wineRoutes.MapPut("/{id}", Wines.UpdateWine).WithOpenApi();
-wineRoutes.MapDelete("/{id}", Wines.DeleteWine).WithOpenApi();
+wineRoutes.MapGet("/", WinesHandler.GetAllWines).WithOpenApi();
+wineRoutes.MapGet("/{id}", WinesHandler.GetWine).WithOpenApi();
+wineRoutes.MapPost("/", WinesHandler.CreateWine).WithOpenApi();
+wineRoutes.MapPut("/{id}", WinesHandler.UpdateWine).WithOpenApi();
+wineRoutes.MapDelete("/{id}", WinesHandler.DeleteWine).WithOpenApi();
 
 // Run
 app.Run();

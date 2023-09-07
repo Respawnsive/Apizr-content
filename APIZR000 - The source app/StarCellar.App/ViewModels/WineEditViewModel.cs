@@ -1,6 +1,7 @@
 ﻿using Refit;
 using StarCellar.App.Services.Apis.Cellar;
 using StarCellar.App.Services.Apis.Cellar.Dtos;
+using StarCellar.App.Services.Apis.Files;
 
 namespace StarCellar.App.ViewModels;
 
@@ -10,14 +11,17 @@ public partial class WineEditViewModel : BaseViewModel
     private readonly ICellarApi _cellarApi;
     private readonly IConnectivity _connectivity;
     private readonly IFilePicker _filePicker;
+    private readonly IFileApi _fileApi;
 
     public WineEditViewModel(ICellarApi cellarApi,
         IConnectivity connectivity,
-        IFilePicker filePicker)
+        IFilePicker filePicker, 
+        IFileApi fileApi)
     {
         _cellarApi = cellarApi;
         _connectivity = connectivity;
         _filePicker = filePicker;
+        _fileApi = fileApi;
     }
 
     [ObservableProperty] private Wine _wine;
@@ -52,7 +56,7 @@ public partial class WineEditViewModel : BaseViewModel
 
                 await using var stream = await result.OpenReadAsync();
                 var streamPart = new StreamPart(stream, result.FileName);
-                Wine.ImageUrl = await _uploadManager.UploadAsync(streamPart);
+                Wine.ImageUrl = await _fileApi.UploadAsync(streamPart);
             }
         }
         catch (Exception ex)
