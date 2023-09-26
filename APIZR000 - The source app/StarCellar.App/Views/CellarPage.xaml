@@ -22,7 +22,8 @@
                             <Label
                                 HorizontalOptions="Center"
                                 Text="Pull to refresh items"
-                                VerticalOptions="Center" />
+                                VerticalOptions="Center"
+                                TextColor="Black"/>
                         </StackLayout>
                     </CollectionView.EmptyView>
                     <CollectionView.ItemTemplate>
