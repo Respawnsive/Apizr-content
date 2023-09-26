@@ -1,13 +1,21 @@
-﻿namespace StarCellar.App.ViewModels;
+﻿using StarCellar.App.Services.Navigation;
+
+namespace StarCellar.App.ViewModels;
 
 public partial class BaseViewModel : ObservableObject
 {
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsNotBusy))]
-    bool isBusy;
+    protected readonly INavigationService NavigationService;
 
     [ObservableProperty]
-    string title;
+    [NotifyPropertyChangedFor(nameof(IsNotBusy))]
+    private bool _isBusy;
+
+    [ObservableProperty] private string _title;
+
+    public BaseViewModel(INavigationService navigationService)
+    {
+        NavigationService = navigationService;
+    }
 
     public bool IsNotBusy => !IsBusy;
 }

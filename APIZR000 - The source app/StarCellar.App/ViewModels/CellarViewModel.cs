@@ -1,5 +1,6 @@
 ﻿using StarCellar.App.Services.Apis.Cellar;
 using StarCellar.App.Services.Apis.Cellar.Dtos;
+using StarCellar.App.Services.Navigation;
 using StarCellar.App.Views;
 
 namespace StarCellar.App.ViewModels;
@@ -9,7 +10,9 @@ public partial class CellarViewModel : BaseViewModel
     private readonly ICellarApi _cellarApi;
     private readonly IConnectivity _connectivity;
 
-    public CellarViewModel(ICellarApi cellarApi, IConnectivity connectivity)
+    public CellarViewModel(INavigationService navigationService, 
+        ICellarApi cellarApi, 
+        IConnectivity connectivity) : base(navigationService)
     {
         _cellarApi = cellarApi;
         _connectivity = connectivity;
@@ -29,7 +32,7 @@ public partial class CellarViewModel : BaseViewModel
         {
             if (_connectivity.NetworkAccess != NetworkAccess.Internet)
             {
-                await Shell.Current.DisplayAlert("No connectivity!",
+                await NavigationService.DisplayAlert("No connectivity!",
                     $"Please check internet and try again.", "OK");
                 return;
             }
@@ -47,7 +50,7 @@ public partial class CellarViewModel : BaseViewModel
         catch (Exception ex)
         {
             Debug.WriteLine($"Unable to get Wines: {ex.Message}");
-            await Shell.Current.DisplayAlert("Error!", ex.Message, "OK");
+            await NavigationService.DisplayAlert("Error!", ex.Message, "OK");
         }
         finally
         {
@@ -59,7 +62,7 @@ public partial class CellarViewModel : BaseViewModel
     [RelayCommand]
     private async Task GoToEditAsync()
     {
-        await Shell.Current.GoToAsync($"{nameof(WineEditPage)}", true, new Dictionary<string, object>
+        await NavigationService.GoToAsync($"{nameof(WineEditPage)}", true, new Dictionary<string, object>
         {
             {nameof(Wine), new Wine() }
         });
@@ -71,7 +74,7 @@ public partial class CellarViewModel : BaseViewModel
         if (wine == null)
             return;
 
-        await Shell.Current.GoToAsync($"{nameof(WineDetailsPage)}", true, new Dictionary<string, object>
+        await NavigationService.GoToAsync($"{nameof(WineDetailsPage)}", true, new Dictionary<string, object>
         {
             {nameof(Wine), wine }
         });

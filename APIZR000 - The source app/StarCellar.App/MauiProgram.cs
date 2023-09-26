@@ -5,6 +5,7 @@ using StarCellar.App.Services.Apis.Cellar;
 using StarCellar.App.Services.Apis.Files;
 using StarCellar.App.Services.Apis.User;
 using StarCellar.App.Services.Apis.User.Dtos;
+using StarCellar.App.Services.Navigation;
 using StarCellar.App.ViewModels;
 using StarCellar.App.Views;
 using UraniumUI;
@@ -20,6 +21,7 @@ public static class MauiProgram
 			.UseMauiApp<App>()
             .UseUraniumUI()
             .UseUraniumUIMaterial()
+            .UseUraniumUIBlurs()
             .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts =>
 			{
@@ -35,28 +37,29 @@ public static class MauiProgram
 		// Infrastructure
         builder.Services.AddSingleton(Connectivity.Current)
             .AddSingleton(FilePicker.Default)
-            .AddSingleton(SecureStorage.Default);
+            .AddSingleton(SecureStorage.Default)
+            .AddSingleton<INavigationService, NavigationService>();
 
         builder.Services.AddRefitClient<IUserApi>(serviceProvider => new RefitSettings
             {
                 AuthorizationHeaderValueGetter = (_, _) =>
                     serviceProvider.GetRequiredService<ISecureStorage>().GetAsync(nameof(Tokens.AccessToken))
             })
-            .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://localhost:7015"));
+            .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://hgksj1pl-7015.uks1.devtunnels.ms"));
 
         builder.Services.AddRefitClient<ICellarApi>(serviceProvider => new RefitSettings
             {
                 AuthorizationHeaderValueGetter = (_, _) =>
                     serviceProvider.GetRequiredService<ISecureStorage>().GetAsync(nameof(Tokens.AccessToken))
             })
-            .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://localhost:7015"));
+            .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://hgksj1pl-7015.uks1.devtunnels.ms"));
 
         builder.Services.AddRefitClient<IFileApi>(serviceProvider => new RefitSettings
             {
                 AuthorizationHeaderValueGetter = (_, _) =>
                     serviceProvider.GetRequiredService<ISecureStorage>().GetAsync(nameof(Tokens.AccessToken))
             })
-            .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://localhost:7015"));
+            .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://hgksj1pl-7015.uks1.devtunnels.ms"));
 
         // Presentation
         builder.Services.AddTransient<LoginViewModel>()

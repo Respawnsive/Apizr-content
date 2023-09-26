@@ -1,9 +1,9 @@
 ﻿using System.Text;
-using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using MiniValidation;
 using StarCellar.App.Services.Apis.User;
 using StarCellar.App.Services.Apis.User.Dtos;
+using StarCellar.App.Services.Navigation;
 using StarCellar.App.Views;
 
 namespace StarCellar.App.ViewModels;
@@ -18,7 +18,10 @@ public partial class LoginViewModel : BaseViewModel
     [ObservableProperty] private string _email;
     [ObservableProperty] private string _password;
 
-    public LoginViewModel(IUserApi userApi, IConnectivity connectivity, ISecureStorage secureStorage)
+    public LoginViewModel(INavigationService navigationService, 
+        IUserApi userApi, 
+        IConnectivity connectivity,
+        ISecureStorage secureStorage) : base(navigationService)
     {
         _userApi = userApi;
         _connectivity = connectivity;
@@ -48,7 +51,7 @@ public partial class LoginViewModel : BaseViewModel
                     await _secureStorage.SetAsync(nameof(Tokens.AccessToken), tokens.AccessToken);
                     await _secureStorage.SetAsync(nameof(Tokens.RefreshToken), tokens.RefreshToken);
 
-                    await Shell.Current.GoToAsync($"//{nameof(CellarPage)}");
+                    await NavigationService.GoToAsync($"//{nameof(CellarPage)}");
                 }
             }
             else
@@ -59,7 +62,7 @@ public partial class LoginViewModel : BaseViewModel
         catch (Exception ex)
         {
             Debug.WriteLine($"Unable to initialize: {ex.Message}");
-            await Shell.Current.DisplayAlert("Error!", ex.Message, "OK");
+            await NavigationService.DisplayAlert("Error!", ex.Message, "OK");
         }
         finally
         {
@@ -76,7 +79,7 @@ public partial class LoginViewModel : BaseViewModel
         // Connectivity
         if (_connectivity.NetworkAccess != NetworkAccess.Internet)
         {
-            await Shell.Current.DisplayAlert("No connectivity!",
+            await NavigationService.DisplayAlert("No connectivity!",
                 $"Please check internet and try again.", "OK");
             return;
         }
@@ -98,7 +101,7 @@ public partial class LoginViewModel : BaseViewModel
                     sb.Append($"  - {error}\n");
             }
 
-            await Shell.Current.DisplayAlert("Input error!", sb.ToString(), "OK");
+            await NavigationService.DisplayAlert("Input error!", sb.ToString(), "OK");
             return;
         }
 
@@ -110,19 +113,19 @@ public partial class LoginViewModel : BaseViewModel
             var tokens = await _userApi.SignInAsync(signInRequest);
             if (string.IsNullOrEmpty(tokens.AccessToken) || string.IsNullOrWhiteSpace(tokens.RefreshToken))
             {
-                await Toast.Make("Unable to signin, please try again later.", ToastDuration.Long).Show();
+                await NavigationService.ShowToast("Unable to signin, please try again later.", ToastDuration.Long);
                 return;
             }
 
             await _secureStorage.SetAsync(nameof(Tokens.AccessToken), tokens.AccessToken);
             await _secureStorage.SetAsync(nameof(Tokens.RefreshToken), tokens.RefreshToken);
 
-            await Shell.Current.GoToAsync($"//{nameof(CellarPage)}");
+            await NavigationService.GoToAsync($"//{nameof(CellarPage)}");
         }
         catch (Exception ex)
         {
             Debug.WriteLine($"Unable to signin: {ex.Message}");
-            await Shell.Current.DisplayAlert("Error!", ex.Message, "OK");
+            await NavigationService.DisplayAlert("Error!", ex.Message, "OK");
         }
         finally
         {
@@ -133,6 +136,6 @@ public partial class LoginViewModel : BaseViewModel
     [RelayCommand]
     public async Task RegisterAsync()
     {
-        await Shell.Current.GoToAsync(nameof(RegisterPage));
+        await NavigationService.GoToAsync(nameof(RegisterPage));
     }
 }

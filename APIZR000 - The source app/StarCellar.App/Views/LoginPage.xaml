@@ -8,11 +8,11 @@
     xmlns:m="clr-namespace:UraniumUI.Icons.MaterialIcons;assembly=UraniumUI.Icons.MaterialIcons"
     xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:uranium="http://schemas.enisn-projects.io/dotnet/maui/uraniumui"
     xmlns:validation="clr-namespace:InputKit.Shared.Validations;assembly=InputKit.Maui"
     xmlns:viewModels="clr-namespace:StarCellar.App.ViewModels"
     Title="LoginPage"
-    x:DataType="viewModels:LoginViewModel"
-    BackgroundColor="#D95716">
+    x:DataType="viewModels:LoginViewModel">
     <ContentPage.Resources>
         <toolkit:VariableMultiValueConverter x:Key="AllTrueConverter" ConditionType="All" />
     </ContentPage.Resources>
@@ -21,12 +21,28 @@
     </ContentPage.Behaviors>
     <Grid RowDefinitions="*,*">
 
-        <VerticalStackLayout
-            Padding="20"
-            Spacing="30"
-            VerticalOptions="Center">
+        <Image
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Aspect="AspectFill"
+            Source="background.jpg" />
 
-            <Image HeightRequest="150" Source="wine_bottle.png" />
+        <VerticalStackLayout
+            Padding="15"
+            HorizontalOptions="Center"
+            Spacing="20"
+            VerticalOptions="Center">
+            <VerticalStackLayout.Effects>
+                <uranium:BlurEffect AccentOpacity="0.2" Mode="Light" />
+            </VerticalStackLayout.Effects>
+
+            <Image HeightRequest="150" Source="wine_bottle_white.png" />
+
+            <Label
+                FontSize="42"
+                HorizontalOptions="Center"
+                Text="𝓢𝓽𝓪𝓻𝓒𝓮𝓵𝓵𝓪𝓻"
+                TextColor="{StaticResource Gray100}" />
 
             <ActivityIndicator
                 HorizontalOptions="Center"
@@ -38,7 +54,7 @@
 
         <Border
             Grid.Row="1"
-            Margin="0,0,0,-2"
+            Margin="5,0,5,-2"
             BackgroundColor="White">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="20,20,0,0" />
@@ -49,7 +65,6 @@
                     HorizontalOptions="Center"
                     IsVisible="{Binding IsInitialized, Converter={toolkit:InvertedBoolConverter}}"
                     Text="Initializing..."
-                    TextColor="Black"
                     VerticalOptions="Center" />
 
                 <VerticalStackLayout
@@ -66,7 +81,6 @@
                     <input:FormView Spacing="20" SubmitCommand="{Binding LoginCommand}">
                         <material:TextField
                             Title="E-mail"
-                            AccentColor="Black"
                             AllowClear="True"
                             Icon="{FontImageSource FontFamily=MaterialRegular,
                                                    Glyph={x:Static m:MaterialRegular.Email}}"
@@ -77,7 +91,6 @@
 
                         <material:TextField
                             Title="Password"
-                            AccentColor="Black"
                             AllowClear="True"
                             Icon="{FontImageSource FontFamily=MaterialRegular,
                                                    Glyph={x:Static m:MaterialRegular.Key}}"
@@ -92,20 +105,15 @@
                         <Button
                             Margin="0,15,0,0"
                             input:FormView.IsSubmitButton="True"
-                            BackgroundColor="#D95716"
-                            CornerRadius="20"
                             FontAttributes="Bold"
-                            FontSize="Medium"
                             Text="LOGIN" />
 
                     </input:FormView>
 
                     <Button
-                        BackgroundColor="White"
                         Command="{Binding RegisterCommand}"
-                        FontSize="Medium"
-                        Text="Register"
-                        TextColor="#D95716" />
+                        FontAttributes="Bold"
+                        Text="REGISTER" />
 
                 </VerticalStackLayout>
             </Grid>

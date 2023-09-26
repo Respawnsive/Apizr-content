@@ -2,6 +2,7 @@
 using StarCellar.App.Services.Apis.Cellar;
 using StarCellar.App.Services.Apis.Cellar.Dtos;
 using StarCellar.App.Services.Apis.Files;
+using StarCellar.App.Services.Navigation;
 
 namespace StarCellar.App.ViewModels;
 
@@ -13,10 +14,11 @@ public partial class WineEditViewModel : BaseViewModel
     private readonly IFilePicker _filePicker;
     private readonly IFileApi _fileApi;
 
-    public WineEditViewModel(ICellarApi cellarApi,
+    public WineEditViewModel(INavigationService navigationService, 
+        ICellarApi cellarApi,
         IConnectivity connectivity,
         IFilePicker filePicker, 
-        IFileApi fileApi)
+        IFileApi fileApi) : base(navigationService)
     {
         _cellarApi = cellarApi;
         _connectivity = connectivity;
@@ -40,14 +42,14 @@ public partial class WineEditViewModel : BaseViewModel
                 if (!result.FileName.EndsWith("jpg", StringComparison.OrdinalIgnoreCase) &&
                     !result.FileName.EndsWith("png", StringComparison.OrdinalIgnoreCase))
                 {
-                    await Shell.Current.DisplayAlert("Format rejected!",
+                    await NavigationService.DisplayAlert("Format rejected!",
                         $"Please select a jpg or png file only.", "OK");
                     return;
                 }
 
                 if (_connectivity.NetworkAccess != NetworkAccess.Internet)
                 {
-                    await Shell.Current.DisplayAlert("No connectivity!",
+                    await NavigationService.DisplayAlert("No connectivity!",
                         $"Please check internet and try again.", "OK");
                     return;
                 }
@@ -62,7 +64,7 @@ public partial class WineEditViewModel : BaseViewModel
         catch (Exception ex)
         {
             Debug.WriteLine($"Unable to set an image: {ex.Message}");
-            await Shell.Current.DisplayAlert("Error!", ex.Message, "OK");
+            await NavigationService.DisplayAlert("Error!", ex.Message, "OK");
         }
         finally
         {
@@ -80,14 +82,14 @@ public partial class WineEditViewModel : BaseViewModel
         {
             if(string.IsNullOrWhiteSpace(Wine.Name))
             {
-                await Shell.Current.DisplayAlert("Name required!",
+                await NavigationService.DisplayAlert("Name required!",
                     $"Please give it a name and try again.", "OK");
                 return;
             }
 
             if (_connectivity.NetworkAccess != NetworkAccess.Internet)
             {
-                await Shell.Current.DisplayAlert("No connectivity!",
+                await NavigationService.DisplayAlert("No connectivity!",
                     $"Please check internet and try again.", "OK");
                 return;
             }
@@ -99,12 +101,12 @@ public partial class WineEditViewModel : BaseViewModel
             else
                 await _cellarApi.UpdateWineAsync(Wine.Id, Wine);
 
-            await Shell.Current.GoToAsync("..");
+            await NavigationService.GoToAsync("..");
         }
         catch (Exception ex)
         {
             Debug.WriteLine($"Unable to save Wine: {ex.Message}");
-            await Shell.Current.DisplayAlert("Error!", ex.Message, "OK");
+            await NavigationService.DisplayAlert("Error!", ex.Message, "OK");
         }
         finally
         {

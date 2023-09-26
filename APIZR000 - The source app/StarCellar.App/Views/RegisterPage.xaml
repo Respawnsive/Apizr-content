@@ -6,17 +6,47 @@
     xmlns:input="clr-namespace:InputKit.Shared.Controls;assembly=InputKit.Maui"
     xmlns:m="clr-namespace:UraniumUI.Icons.MaterialIcons;assembly=UraniumUI.Icons.MaterialIcons"
     xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    xmlns:uranium="http://schemas.enisn-projects.io/dotnet/maui/uraniumui"
     xmlns:validation="clr-namespace:InputKit.Shared.Validations;assembly=InputKit.Maui"
     xmlns:viewModels="clr-namespace:StarCellar.App.ViewModels"
     Title="RegisterPage"
-    x:DataType="viewModels:RegisterViewModel"
-    BackgroundColor="#D95716">
-    <Grid RowDefinitions="*,*">
-        <Image HeightRequest="150" Source="wine_bottle.png" />
+    x:DataType="viewModels:RegisterViewModel">
+    <Grid RowDefinitions="*,Auto">
+
+        <Image
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Aspect="AspectFill"
+            Source="background.jpg" />
+
+        <VerticalStackLayout
+            Padding="15"
+            HorizontalOptions="Center"
+            Spacing="20"
+            VerticalOptions="Center">
+            <VerticalStackLayout.Effects>
+                <uranium:BlurEffect AccentOpacity="0.2" Mode="Light" />
+            </VerticalStackLayout.Effects>
+
+            <Image HeightRequest="150" Source="wine_bottle_white.png" />
+
+            <Label
+                FontSize="42"
+                HorizontalOptions="Center"
+                Text="𝓢𝓽𝓪𝓻𝓒𝓮𝓵𝓵𝓪𝓻"
+                TextColor="{StaticResource Gray100}" />
+
+            <ActivityIndicator
+                HorizontalOptions="Center"
+                IsRunning="{Binding IsBusy}"
+                IsVisible="{Binding IsBusy}"
+                VerticalOptions="Center" />
+
+        </VerticalStackLayout>
 
         <Border
             Grid.Row="1"
-            Margin="0,0,0,-2"
+            Margin="5,0,5,-2"
             BackgroundColor="White">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="20,20,0,0" />
@@ -27,21 +57,19 @@
                 Spacing="10"
                 VerticalOptions="Center">
 
-                <input:FormView>
+                <input:FormView Spacing="20" SubmitCommand="{Binding SaveCommand}">
                     <material:TextField
-                        Title="Name"
-                        AccentColor="Black"
+                        Title="FullName"
                         AllowClear="True"
                         Icon="{FontImageSource FontFamily=MaterialRegular,
                                                Glyph={x:Static m:MaterialRegular.People}}"
-                        Text="{Binding Name}">
-                        <validation:RequiredValidation Message="Name required" />
+                        Text="{Binding FullName}">
+                        <validation:RequiredValidation Message="FullName required" />
                         <validation:RegexValidation Message="Invalid name format" Pattern="{x:Static input:AdvancedEntry.REGEX_LETTERONLY}" />
                     </material:TextField>
 
                     <material:TextField
                         Title="E-mail"
-                        AccentColor="Black"
                         AllowClear="True"
                         Icon="{FontImageSource FontFamily=MaterialRegular,
                                                Glyph={x:Static m:MaterialRegular.Email}}"
@@ -51,8 +79,16 @@
                     </material:TextField>
 
                     <material:TextField
+                        Title="Username"
+                        AllowClear="True"
+                        Icon="{FontImageSource FontFamily=MaterialRegular,
+                                               Glyph={x:Static m:MaterialRegular.People}}"
+                        Text="{Binding Username}">
+                        <validation:RequiredValidation Message="Username required" />
+                    </material:TextField>
+
+                    <material:TextField
                         Title="Password"
-                        AccentColor="Black"
                         AllowClear="True"
                         Icon="{FontImageSource FontFamily=MaterialRegular,
                                                Glyph={x:Static m:MaterialRegular.Key}}"
@@ -64,33 +100,35 @@
                         </material:TextField.Attachments>
                     </material:TextField>
 
+                    <material:TextField
+                        Title="Confirm password"
+                        AllowClear="True"
+                        Icon="{FontImageSource FontFamily=MaterialRegular,
+                                               Glyph={x:Static m:MaterialRegular.Key}}"
+                        IsPassword="True"
+                        Text="{Binding ConfirmPassword}">
+                        <validation:RequiredValidation Message="Confirm password required" />
+                        <material:TextField.Attachments>
+                            <material:TextFieldPasswordShowHideAttachment />
+                        </material:TextField.Attachments>
+                    </material:TextField>
+
 
                     <Grid Margin="0,15,0,0">
 
                         <Button
                             input:FormView.IsSubmitButton="True"
-                            BackgroundColor="#D95716"
                             Command="{Binding SaveCommand}"
                             CornerRadius="20"
                             FontAttributes="Bold"
                             FontSize="Medium"
-                            Text="LOGIN">
-                            <Button.Triggers>
-                                <DataTrigger
-                                    Binding="{Binding SaveCommand.IsRunning}"
-                                    TargetType="Button"
-                                    Value="True">
-                                    <Setter Property="Text" Value="" />
-                                </DataTrigger>
-                            </Button.Triggers>
-                        </Button>
+                            Text="REGISTER" />
 
                         <ActivityIndicator
                             HorizontalOptions="Center"
-                            IsRunning="{Binding SaveCommand.IsRunning}"
-                            IsVisible="{Binding SaveCommand.IsRunning}"
-                            VerticalOptions="Center"
-                            Color="White" />
+                            IsRunning="{Binding IsBusy}"
+                            IsVisible="{Binding IsBusy}"
+                            VerticalOptions="Center" />
 
                     </Grid>
 
